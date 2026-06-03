@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // url configured in prisma.config.ts via @prisma/adapter-pg (Prisma 7)
+}
+
+// ─── Geo hierarchy ────────────────────────────────────────────────
+
+model Region {
+  code        String       @id        // "11", "32", "93", etc. (INSEE)
+  name        String
+  slug        String       @unique    // "ile-de-france", "hauts-de-france"
+  departments Department[]
+}
+
+model Department {
+  code       String   @id            // "75", "2A", "95", etc.
+  name       String
+  slug       String   @unique        // "paris-75", "val-d-oise-95"
+  regionCode String
+  region     Region   @relation(fields: [regionCode], references: [code])
+  cities     City[]
+
+  @@index([regionCode])
+}
+
+model City {
+  // ville_key is "{ville_slug}-{dpt}" outside Paris, "paris-{zip}" for Paris arr (AD-02)
+  key        String     @id          // "pontoise-95", "paris-75019", "lille-59"
+  name       String                  // display name: "Pontoise", "Paris", "Lille"
+  slug       String                  // "pontoise", "paris", "lille" (not unique — Paris has 20 arrs)
+  zip        String                  // representative zip for this city entry
+  dptCode    String
+  department Department @relation(fields: [dptCode], references: [code])
+  cabinets   Cabinet[]
+
+  @@index([dptCode])
+  @@index([slug])
+}
+
+// ─── Cabinet ──────────────────────────────────────────────────────
+
+model Cabinet {
+  // Identity
+  placeId              String    @id            // Google Maps place_id, stable PK
+  featureId            String?                  // alternate Google identifier
+  title                String
+  slug                 String    @unique        // cabinet_slug, e.g. "sarl-grba-expert-comptable"
+
+  // Location
+  cityKey              String
+  city                 City      @relation(fields: [cityKey], references: [key])
+  zip                  String
+  street               String
+  address              String
+  latitude             Float
+  longitude            Float
+
+  // Contact
+  phoneE164            String?                  // "+33140402829"
+  phoneDisplay         String?                  // "01 40 40 28 29"
+  url                  String?
+
+  // Rating
+  ratingValue          Float?
+  ratingCount          Int?
+
+  // Schedule + attributes (complex nested JSON, stored as-is from enriched JSON)
+  workHours            Json?                    // {monday: [{open, close}], ...} or null
+  attributes           Json      @default("[]") // [{category: "accessibility", tag: "..."}]
+
+  // Google Maps signals
+  peopleAlsoSearch     Json      @default("[]") // [{title, cid, feature_id, rating, rating_count}]
+  placeTopics          Json      @default("{}") // {topic_name: count}
+
+  // Editorial
+  description          String?   @db.Text
+  descriptionSource    String?                  // "google_maps" | "generated"
+
+  // SIRENE enrichment (82.2% coverage — null when not matched)
+  siren                String?
+  siret                String?
+  formeJuridiqueCode   String?
+  formeJuridiqueLabel  String?
+  nafCode              String?
+  dateCreation         String?                  // "2007-06-10" — display only, no date arithmetic
+  trancheEffectifCode  String?
+  trancheEffectifLabel String?
+  sireneConfidence     String?                  // "high" | "medium" | "low"
+
+  // LLM enrichment (62.5% / 42.1% coverage — empty array when not extracted, AD-12)
+  services             String[]                 // ["comptabilite", "juridique", ...]
+  secteurs             String[]                 // ["pme", "professions-liberales", ...]
+  languesEtrangeres    String[]
+  presenceDigitale     Boolean   @default(false)
+
+  // Images (paths relative to /public, null when missing, AD-10)
+  imageLogoPath        String?                  // "/cabinets/{placeId}/logo.webp"
+  imageMainPath        String?                  // "/cabinets/{placeId}/main.webp"
+  imageLogoQuality     String?                  // "ok" | "default" | "missing"
+  imageMainQuality     String?                  // "ok" | "default" | "missing"
+
+  // Phase 2 monetization hooks — columns scaffolded now, activated in phase 2 (AD-05)
+  featured             Boolean   @default(false)
+  claimStatus          String?                  // null = unclaimed | "pending" | "claimed"
+  isDeleted            Boolean   @default(false) // RGPD soft delete from /supprimer-ma-fiche
+
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([cityKey])
+  @@index([featured])
+  @@index([siren])
+  @@index([isDeleted])
+}
