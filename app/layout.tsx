@@ -30,7 +30,7 @@ export default function RootLayout({
           Aller au contenu
         </a>
         <Header />
-        <main id="main-content" className="flex-1">
+        <main id="main-content" className="flex-1 scroll-mt-14">
           {children}
         </main>
         <Footer />

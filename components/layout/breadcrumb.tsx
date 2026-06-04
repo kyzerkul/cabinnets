@@ -23,21 +23,24 @@ export function SiteBreadcrumb({ items }: SiteBreadcrumbProps) {
       <Container size="wide">
         <Breadcrumb>
           <BreadcrumbList>
-            {items.map((item, index) => (
-              <BreadcrumbItem key={index}>
-                {item.href ? (
-                  <Link
-                    href={item.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                ) : (
-                  <BreadcrumbPage className="text-sm">{item.label}</BreadcrumbPage>
-                )}
-                {index < items.length - 1 && <BreadcrumbSeparator />}
-              </BreadcrumbItem>
-            ))}
+            {items.map((item, index) => {
+              const isLast = index === items.length - 1
+              return (
+                <BreadcrumbItem key={item.href ?? item.label}>
+                  {item.href && !isLast ? (
+                    <Link
+                      href={item.href}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <BreadcrumbPage className="text-sm">{item.label}</BreadcrumbPage>
+                  )}
+                  {!isLast && <BreadcrumbSeparator />}
+                </BreadcrumbItem>
+              )
+            })}
           </BreadcrumbList>
         </Breadcrumb>
       </Container>
