@@ -34,8 +34,10 @@ export function SiteBreadcrumb({ items }: SiteBreadcrumbProps) {
                     >
                       {item.label}
                     </Link>
-                  ) : (
+                  ) : isLast ? (
                     <BreadcrumbPage className="text-sm">{item.label}</BreadcrumbPage>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">{item.label}</span>
                   )}
                   {!isLast && <BreadcrumbSeparator />}
                 </BreadcrumbItem>
