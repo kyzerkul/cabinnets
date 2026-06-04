@@ -46,8 +46,18 @@ export async function getCabinetsNearCity(
   const centLat = ownCabinets.reduce((s, c) => s + c.latitude, 0) / ownCabinets.length
   const centLon = ownCabinets.reduce((s, c) => s + c.longitude, 0) / ownCabinets.length
 
+  // Bounding-box pre-filter reduces DB rows before haversine computation.
+  // 1° lat ≈ 111 km; 1° lon ≈ 111 km × cos(lat).
+  const latRange = radiusKm / 111
+  const lonRange = radiusKm / (111 * Math.cos((centLat * Math.PI) / 180))
+
   const all = await prisma.cabinet.findMany({
-    where: { isDeleted: false, NOT: { cityKey } },
+    where: {
+      isDeleted: false,
+      NOT: { cityKey },
+      latitude: { gte: centLat - latRange, lte: centLat + latRange },
+      longitude: { gte: centLon - lonRange, lte: centLon + lonRange },
+    },
     include: { city: true },
     orderBy: SORT,
   })
