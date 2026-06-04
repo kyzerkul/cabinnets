@@ -102,8 +102,15 @@ async function main() {
   const records = loadData()
   console.log(`  ${records.length} records loaded`)
 
-  // Skip records with invalid geo (region_code null or dpt "00" / null)
-  const valid = records.filter(r => r.region_code != null && r.dpt != null && r.dpt !== '00')
+  // Skip records with invalid geo or out-of-bounds coordinates
+  const valid = records.filter(r => {
+    if (r.region_code == null || r.dpt == null || r.dpt === '00') return false
+    const lat = Number(r.latitude)
+    const lon = Number(r.longitude)
+    if (isNaN(lat) || isNaN(lon)) return false
+    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return false
+    return true
+  })
   const skipped = records.length - valid.length
   if (skipped > 0) console.log(`  ${skipped} records skipped (invalid geo fields)`)
 
@@ -177,12 +184,8 @@ async function main() {
   console.log(`  ${count} cities upserted`)
 
   // ── 4. Cabinets ──────────────────────────────────────────────────────────────
-  // Full truncate + batch insert: avoids slug unique-constraint conflicts from
-  // partial previous runs. Safe because source JSON is the single source of truth.
-  console.log('\nTruncating cabinets…')
-  await prisma.cabinet.deleteMany({})
-
-  console.log('Inserting cabinets in batches…')
+  // Wrapped in a transaction: deleteMany + all createMany batches succeed or
+  // all roll back — no risk of leaving the table empty on partial failure.
   const rows = valid.map(r => ({
     placeId: r.place_id,
     featureId: r.feature_id,
@@ -224,11 +227,15 @@ async function main() {
     imageMainQuality: r.image_main_quality,
   }))
 
+  console.log('\nTruncating + inserting cabinets in transaction…')
   const BATCH = 200
-  for (let i = 0; i < rows.length; i += BATCH) {
-    await prisma.cabinet.createMany({ data: rows.slice(i, i + BATCH) })
-    process.stdout.write(`\r  ${Math.min(i + BATCH, rows.length)}/${rows.length}…`)
-  }
+  await prisma.$transaction(async (tx) => {
+    await tx.cabinet.deleteMany({})
+    for (let i = 0; i < rows.length; i += BATCH) {
+      await tx.cabinet.createMany({ data: rows.slice(i, i + BATCH) })
+      process.stdout.write(`\r  ${Math.min(i + BATCH, rows.length)}/${rows.length}…`)
+    }
+  }, { timeout: 120_000 })
   console.log(`\r  ${rows.length} cabinets inserted    `)
 
   // ── 5. Summary ───────────────────────────────────────────────────────────────
