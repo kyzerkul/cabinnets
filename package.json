@@ -10,7 +10,8 @@
     "db:migrate": "dotenvx run -f .env -- prisma migrate deploy",
     "db:migrate:dev": "dotenvx run -f .env -- prisma migrate dev",
     "db:studio": "dotenvx run -f .env -- prisma studio",
-    "db:generate": "dotenvx run -f .env -- prisma generate"
+    "db:generate": "dotenvx run -f .env -- prisma generate",
+    "db:import": "dotenvx run -f .env -- tsx scripts/import.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -39,6 +40,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "tailwindcss": "^4",
+    "tsx": "^4.22.4",
     "typescript": "^5"
   }
 }

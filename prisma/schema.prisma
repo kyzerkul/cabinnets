@@ -54,7 +54,7 @@ model Cabinet {
   cityKey              String
   city                 City      @relation(fields: [cityKey], references: [key])
   zip                  String
-  street               String
+  street               String?
   address              String
   latitude             Float
   longitude            Float
