@@ -1,3 +1,5 @@
+export const BUILD_DATE = new Date().toISOString().slice(0, 10)
+
 export function xmlUrlEntry(
   loc: string,
   lastmod: string,

@@ -1,10 +1,8 @@
 import { getAllRegionCodes, getRegion } from '@/lib/cities'
 import { canonicalUrl } from '@/lib/seo'
-import { xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
+import { BUILD_DATE, xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
 
 export const dynamic = 'force-static'
-
-const BUILD_DATE = new Date().toISOString().slice(0, 10)
 
 const STATIC_PAGES: { path: string; priority: number }[] = [
   { path: '/', priority: 1.0 },

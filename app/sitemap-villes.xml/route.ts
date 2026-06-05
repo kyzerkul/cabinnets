@@ -1,14 +1,12 @@
 import { getAllCityKeys } from '@/lib/cities'
 import { canonicalUrl } from '@/lib/seo'
-import { xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
+import { BUILD_DATE, xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
 
 export const dynamic = 'force-static'
 
 // Paris arrondissement keys match paris-750NN (e.g. paris-75001).
 // paris-75 is the Paris global city page — kept here.
 const PARIS_ARR_RE = /^paris-750\d{2}$/
-
-const BUILD_DATE = new Date().toISOString().slice(0, 10)
 
 export async function GET() {
   const keys = await getAllCityKeys()

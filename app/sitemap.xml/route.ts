@@ -1,9 +1,7 @@
 import { siteUrl } from '@/lib/seo'
-import { xmlSitemapEntry, xmlSitemapIndex } from '@/lib/sitemap'
+import { BUILD_DATE, xmlSitemapEntry, xmlSitemapIndex } from '@/lib/sitemap'
 
 export const dynamic = 'force-static'
-
-const BUILD_DATE = new Date().toISOString().slice(0, 10)
 
 export function GET() {
   const base = siteUrl()

@@ -1,10 +1,8 @@
 import { getAllCabinetSlugs } from '@/lib/cabinets'
 import { canonicalUrl } from '@/lib/seo'
-import { xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
+import { BUILD_DATE, xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
 
 export const dynamic = 'force-static'
-
-const BUILD_DATE = new Date().toISOString().slice(0, 10)
 
 export async function GET() {
   const slugs = await getAllCabinetSlugs()
