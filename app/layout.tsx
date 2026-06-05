@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { buildHomepageTitle, SITE_NAME } from '@/lib/seo'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -11,8 +12,27 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Annuaire des cabinets comptables',
-  description: 'Trouvez un expert-comptable près de chez vous.',
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+  ),
+  title: {
+    default: buildHomepageTitle(),
+    template: `%s | ${SITE_NAME}`,
+  },
+  description:
+    'Annuaire des cabinets comptables en France. Trouvez un expert-comptable près de chez vous.',
+  openGraph: {
+    type: 'website',
+    locale: 'fr_FR',
+    siteName: SITE_NAME,
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({
