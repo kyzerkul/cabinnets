@@ -93,6 +93,9 @@ export async function getCityCount(): Promise<number> {
 export async function getTopCitiesByCabinetCount(
   limit: number,
 ): Promise<{ key: string; name: string; zip: string; dptCode: string; cabinetCount: number }[]> {
+  const safeLimit = Number.isFinite(limit) ? Math.max(0, Math.trunc(limit)) : 0
+  if (safeLimit === 0) return []
+
   // orderBy relation _count is not supported by Prisma 7 types — sort in JS instead.
   const rows = await prisma.city.findMany({
     where: { NOT: { key: { startsWith: 'paris-750' } } },
@@ -112,6 +115,6 @@ export async function getTopCitiesByCabinetCount(
       dptCode: r.dptCode,
       cabinetCount: r._count.cabinets,
     }))
-    .sort((a, b) => b.cabinetCount - a.cabinetCount)
-    .slice(0, limit)
+    .sort((a, b) => b.cabinetCount - a.cabinetCount || a.name.localeCompare(b.name, 'fr'))
+    .slice(0, safeLimit)
 }

@@ -263,13 +263,16 @@ export function buildWebsiteJsonLd(): Record<string, unknown> {
 
 export function buildOrganizationJsonLd(): Record<string, unknown> {
   const base = siteUrl()
-  return {
+  const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: SITE_NAME,
-    url: base,
-    logo: canonicalUrl('/icon.svg'),
   }
+  if (base) {
+    jsonLd.url = base
+    jsonLd.logo = canonicalUrl('/icon.svg')
+  }
+  return jsonLd
 }
 
 // ─── Internal ─────────────────────────────────────────────────────
