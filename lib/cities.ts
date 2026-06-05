@@ -89,7 +89,7 @@ export async function getAllParisArrKeys(): Promise<string[]> {
 export async function getAllNormalCityKeys(): Promise<string[]> {
   const rows = await prisma.city.findMany({
     where: { NOT: { key: { startsWith: 'paris-750' } } },
-    select: { key: true, _count: { select: { cabinets: true } } },
+    select: { key: true, _count: { select: { cabinets: { where: { isDeleted: false } } } } },
   })
   return rows.filter((r) => r._count.cabinets >= 3).map((r) => r.key)
 }
@@ -99,7 +99,12 @@ export async function getCitiesByDeptWithCount(
 ): Promise<{ key: string; name: string; zip: string; cabinetCount: number }[]> {
   const rows = await prisma.city.findMany({
     where: { dptCode },
-    select: { key: true, name: true, zip: true, _count: { select: { cabinets: true } } },
+    select: {
+      key: true,
+      name: true,
+      zip: true,
+      _count: { select: { cabinets: { where: { isDeleted: false } } } },
+    },
     orderBy: { name: 'asc' },
   })
   return rows.map((r) => ({
