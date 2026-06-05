@@ -1,0 +1,38 @@
+import { getAllRegionCodes, getRegion } from '@/lib/cities'
+import { canonicalUrl } from '@/lib/seo'
+import { xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
+
+export const dynamic = 'force-static'
+
+const BUILD_DATE = new Date().toISOString().slice(0, 10)
+
+const STATIC_PAGES: { path: string; priority: number }[] = [
+  { path: '/', priority: 1.0 },
+  { path: '/demander-un-devis', priority: 0.5 },
+  { path: '/mentions-legales', priority: 0.3 },
+  { path: '/confidentialite', priority: 0.3 },
+  { path: '/cgu', priority: 0.3 },
+]
+
+export async function GET() {
+  const codes = await getAllRegionCodes()
+  const regions = await Promise.all(codes.map((c) => getRegion(c)))
+
+  const regionEntries = regions
+    .filter((r): r is NonNullable<typeof r> => r !== null)
+    .map((r) =>
+      xmlUrlEntry(
+        canonicalUrl(`/cabinets-comptables/region/${r.slug}`),
+        BUILD_DATE,
+        0.8,
+      ),
+    )
+
+  const staticEntries = STATIC_PAGES.map(({ path, priority }) =>
+    xmlUrlEntry(canonicalUrl(path), BUILD_DATE, priority),
+  )
+
+  return new Response(xmlUrlset([...staticEntries, ...regionEntries]), {
+    headers: { 'Content-Type': 'application/xml' },
+  })
+}
