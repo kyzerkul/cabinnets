@@ -5,7 +5,8 @@ import { PrismaPg } from '@prisma/adapter-pg'
 function createPrismaClient() {
   const url = process.env.DATABASE_URL
   if (!url) throw new Error('DATABASE_URL is not set')
-  const pool = new Pool({ connectionString: url })
+  // max:1 avoids connection pool exhaustion across the 7 SSG build workers (each process gets its own pool)
+  const pool = new Pool({ connectionString: url, max: 1, idleTimeoutMillis: 10000 })
   const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
 }

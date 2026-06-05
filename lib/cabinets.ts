@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db'
 import { haversineKm } from '@/lib/geo'
 import type { CabinetWithCity, CabinetWithRelations } from '@/lib/types'
 
+type PasItem = { feature_id?: string }
+
 const SORT = [
   { featured: 'desc' as const },
   { ratingValue: { sort: 'desc' as const, nulls: 'last' as const } },
@@ -121,4 +123,41 @@ export async function countCabinetsByRegion(regionCode: string): Promise<number>
 
 export async function getTotalCabinetCount(): Promise<number> {
   return prisma.cabinet.count({ where: { isDeleted: false } })
+}
+
+// ─── Fiche relations ──────────────────────────────────────────────
+
+// Up to `limit` cabinets in the same city, excluding the current one.
+export async function getCabinetsProches(
+  cabinet: Pick<CabinetWithRelations, 'slug' | 'cityKey'>,
+  limit = 6,
+): Promise<CabinetWithCity[]> {
+  return prisma.cabinet.findMany({
+    where: { cityKey: cabinet.cityKey, slug: { not: cabinet.slug }, isDeleted: false },
+    include: { city: true },
+    orderBy: SORT,
+    take: limit,
+  })
+}
+
+// Matches featureIds from peopleAlsoSearch JSON against our cabinets.
+export async function getPeopleAlsoSearchCabinets(
+  cabinet: Pick<CabinetWithRelations, 'peopleAlsoSearch'>,
+  limit = 5,
+): Promise<CabinetWithCity[]> {
+  const pas = cabinet.peopleAlsoSearch
+  if (!Array.isArray(pas) || pas.length === 0) return []
+
+  const featureIds = (pas as PasItem[])
+    .map((p) => p.feature_id)
+    .filter((id): id is string => typeof id === 'string' && id.length > 0)
+
+  if (featureIds.length === 0) return []
+
+  return prisma.cabinet.findMany({
+    where: { featureId: { in: featureIds }, isDeleted: false },
+    include: { city: true },
+    orderBy: SORT,
+    take: limit,
+  })
 }
