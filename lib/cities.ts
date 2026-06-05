@@ -1,6 +1,16 @@
 import 'server-only'
 import { prisma } from '@/lib/db'
+import { haversineKm } from '@/lib/geo'
 import type { City, Department, Region, CityWithDept, DeptWithRegion } from '@/lib/types'
+
+export type NearbyCityResult = {
+  key: string
+  name: string
+  zip: string
+  dptCode: string
+  cabinetCount: number
+  distanceKm: number
+}
 
 // ─── Single lookups ───────────────────────────────────────────────
 
@@ -70,6 +80,103 @@ export async function getAllParisArrKeys(): Promise<string[]> {
     select: { key: true },
   })
   return rows.map((r) => r.key)
+}
+
+// ─── Spec 09 helpers ──────────────────────────────────────────────
+
+// City keys with ≥3 cabinets, excluding Paris arrondissements (paris-750xx).
+// paris-75 (global) does NOT start with 'paris-750' and is intentionally included.
+export async function getAllNormalCityKeys(): Promise<string[]> {
+  const rows = await prisma.city.findMany({
+    where: { NOT: { key: { startsWith: 'paris-750' } } },
+    select: { key: true, _count: { select: { cabinets: true } } },
+  })
+  return rows.filter((r) => r._count.cabinets >= 3).map((r) => r.key)
+}
+
+export async function getCitiesByDeptWithCount(
+  dptCode: string,
+): Promise<{ key: string; name: string; zip: string; cabinetCount: number }[]> {
+  const rows = await prisma.city.findMany({
+    where: { dptCode },
+    select: { key: true, name: true, zip: true, _count: { select: { cabinets: true } } },
+    orderBy: { name: 'asc' },
+  })
+  return rows.map((r) => ({
+    key: r.key,
+    name: r.name,
+    zip: r.zip,
+    cabinetCount: r._count.cabinets,
+  }))
+}
+
+// Top `limit` distinct cities (≠ cityKey) whose cabinets fall within 50 km of
+// the current city's centroid (computed from its own cabinet coordinates).
+export async function getNearbyNormalCities(
+  cityKey: string,
+  limit = 5,
+): Promise<NearbyCityResult[]> {
+  const ownCabinets = await prisma.cabinet.findMany({
+    where: { cityKey, isDeleted: false },
+    select: { latitude: true, longitude: true },
+  })
+  if (ownCabinets.length === 0) return []
+
+  const centLat = ownCabinets.reduce((s, c) => s + c.latitude, 0) / ownCabinets.length
+  const centLon = ownCabinets.reduce((s, c) => s + c.longitude, 0) / ownCabinets.length
+
+  const radiusKm = 50
+  const latRange = radiusKm / 111
+  const lonRange = radiusKm / (111 * Math.cos((centLat * Math.PI) / 180))
+
+  const nearby = await prisma.cabinet.findMany({
+    where: {
+      isDeleted: false,
+      NOT: { cityKey },
+      latitude: { gte: centLat - latRange, lte: centLat + latRange },
+      longitude: { gte: centLon - lonRange, lte: centLon + lonRange },
+    },
+    select: {
+      cityKey: true,
+      latitude: true,
+      longitude: true,
+      city: { select: { key: true, name: true, zip: true, dptCode: true } },
+    },
+  })
+
+  const cityMap = new Map<
+    string,
+    { name: string; zip: string; dptCode: string; count: number; minDist: number }
+  >()
+  for (const c of nearby) {
+    const dist = haversineKm(centLat, centLon, c.latitude, c.longitude)
+    if (dist > radiusKm) continue
+    const entry = cityMap.get(c.cityKey)
+    if (!entry) {
+      cityMap.set(c.cityKey, {
+        name: c.city.name,
+        zip: c.city.zip,
+        dptCode: c.city.dptCode,
+        count: 1,
+        minDist: dist,
+      })
+    } else {
+      entry.count++
+      entry.minDist = Math.min(entry.minDist, dist)
+    }
+  }
+
+  return Array.from(cityMap.entries())
+    .map(([key, v]) => ({
+      key,
+      name: v.name,
+      zip: v.zip,
+      dptCode: v.dptCode,
+      cabinetCount: v.count,
+      distanceKm: v.minDist,
+    }))
+    .sort((a, b) => a.distanceKm - b.distanceKm)
+    .slice(0, limit)
 }
 
 // ─── Counts ───────────────────────────────────────────────────────
