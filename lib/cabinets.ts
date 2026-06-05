@@ -157,6 +157,7 @@ export async function getPeopleAlsoSearchCabinets(
   return prisma.cabinet.findMany({
     where: { featureId: { in: featureIds }, isDeleted: false },
     include: { city: true },
+    orderBy: SORT,
     take: limit,
   })
 }

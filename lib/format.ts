@@ -21,17 +21,6 @@ export const DAY_ORDER = [
   'sunday',
 ]
 
-// JS getDay() → our key
-const JS_DAY_MAP: Record<number, string> = {
-  0: 'sunday',
-  1: 'monday',
-  2: 'tuesday',
-  3: 'wednesday',
-  4: 'thursday',
-  5: 'friday',
-  6: 'saturday',
-}
-
 export function parseWorkHours(raw: unknown): WorkHours | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
   return raw as WorkHours
@@ -42,15 +31,35 @@ export function formatSlots(slots: DaySlot[]): string {
   return slots.map((s) => `${s.open}–${s.close}`).join(', ')
 }
 
+// Business hours are in Europe/Paris — always compare against Paris local time,
+// not the visitor's browser timezone (may differ for international visitors).
 export function getTodayKey(): string {
-  return JS_DAY_MAP[new Date().getDay()] ?? 'monday'
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Paris',
+    weekday: 'long',
+  })
+    .format(new Date())
+    .toLowerCase()
 }
 
 export function isOpenNow(hours: WorkHours): boolean {
-  const todayKey = getTodayKey()
+  const now = new Date()
+  const todayKey = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Paris',
+    weekday: 'long',
+  })
+    .format(now)
+    .toLowerCase()
+
   const slots = hours[todayKey]
   if (!slots || slots.length === 0) return false
-  const now = new Date()
-  const hhmm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+
+  const hhmm = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Paris',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(now)
+
   return slots.some((s) => hhmm >= s.open && hhmm < s.close)
 }

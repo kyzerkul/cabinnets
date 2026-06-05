@@ -12,6 +12,7 @@ interface MapEmbedProps {
 export function MapEmbed({ latitude, longitude, name }: MapEmbedProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const initialized = useRef(false)
+  const mounted = useRef(true)
 
   useEffect(() => {
     if (initialized.current || !containerRef.current) return
@@ -20,10 +21,12 @@ export function MapEmbed({ latitude, longitude, name }: MapEmbedProps) {
 
     const observer = new IntersectionObserver(
       async (entries) => {
-        if (!entries[0].isIntersecting) return
+        if (!entries[0].isIntersecting || !mounted.current) return
         observer.disconnect()
 
         const L = (await import('leaflet')).default
+
+        if (!mounted.current) return
 
         // Leaflet default icons reference broken paths in bundlers — override with CDN
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,7 +49,10 @@ export function MapEmbed({ latitude, longitude, name }: MapEmbedProps) {
     )
 
     observer.observe(container)
-    return () => observer.disconnect()
+    return () => {
+      mounted.current = false
+      observer.disconnect()
+    }
   }, [latitude, longitude, name])
 
   return (
