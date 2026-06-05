@@ -261,6 +261,17 @@ export function buildWebsiteJsonLd(): Record<string, unknown> {
   }
 }
 
+export function buildOrganizationJsonLd(): Record<string, unknown> {
+  const base = siteUrl()
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: SITE_NAME,
+    url: base,
+    logo: canonicalUrl('/icon.svg'),
+  }
+}
+
 // ─── Internal ─────────────────────────────────────────────────────
 
 function buildOpeningHoursSpec(workHours: unknown): Record<string, unknown>[] {
