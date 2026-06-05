@@ -87,7 +87,6 @@ export default async function FicheCabinetPage({ params }: Props) {
   const dept = city.department
   const region = dept.region
   const ville = formatCityDisplay(city)
-  const canonical = canonicalUrl(`/expert-comptable/${cabinet.cityKey}/${cabinet.slug}`)
 
   const ficheJsonLd = buildFicheJsonLd(cabinet)
   const breadcrumbJsonLd = buildBreadcrumbsJsonLd([
