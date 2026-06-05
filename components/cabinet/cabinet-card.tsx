@@ -3,11 +3,11 @@ import Image from 'next/image'
 import { MapPin } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { RatingStars } from '@/components/ui/rating-stars'
-import type { CabinetWithCity } from '@/lib/types'
+import type { CabinetForCard } from '@/lib/types'
 import { formatCityDisplay } from '@/lib/seo'
 
 interface CabinetCardProps {
-  cabinet: CabinetWithCity
+  cabinet: CabinetForCard
   distanceKm?: number
 }
 

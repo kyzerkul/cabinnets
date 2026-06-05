@@ -1,7 +1,7 @@
 import 'server-only'
 import { prisma } from '@/lib/db'
 import { haversineKm } from '@/lib/geo'
-import type { CabinetWithCity, CabinetWithRelations } from '@/lib/types'
+import type { CabinetForCard, CabinetSsgEntry, CabinetWithCity, CabinetWithRelations } from '@/lib/types'
 
 type PasItem = { feature_id?: string }
 
@@ -123,6 +123,56 @@ export async function countCabinetsByRegion(regionCode: string): Promise<number>
 
 export async function getTotalCabinetCount(): Promise<number> {
   return prisma.cabinet.count({ where: { isDeleted: false } })
+}
+
+// ─── SSG module-level cache ───────────────────────────────────────
+// Promise-based: concurrent page renders in the same worker share a single DB
+// query. Uses a lite SELECT (~12 fields) to keep the query fast on Neon free.
+
+let _ssgPromise: Promise<CabinetSsgEntry[]> | null = null
+
+export function getAllCabinetsForSsg(): Promise<CabinetSsgEntry[]> {
+  if (_ssgPromise !== null) return _ssgPromise
+  _ssgPromise = prisma.cabinet.findMany({
+    where: { isDeleted: false },
+    select: {
+      placeId: true,
+      title: true,
+      slug: true,
+      cityKey: true,
+      latitude: true,
+      longitude: true,
+      imageLogoPath: true,
+      imageLogoQuality: true,
+      ratingValue: true,
+      ratingCount: true,
+      description: true,
+      featured: true,
+      city: { select: { key: true, name: true, zip: true } },
+    },
+    orderBy: SORT,
+  })
+  return _ssgPromise
+}
+
+// In-memory variant for thin-city pages: uses the SSG cache to avoid 2 DB
+// queries per page. Returns CabinetForCard (subset of fields) with distanceKm.
+export async function getCabinetsNearCityFast(
+  cityKey: string,
+  radiusKm = 20,
+): Promise<(CabinetForCard & { distanceKm: number })[]> {
+  const all = await getAllCabinetsForSsg()
+  const own = all.filter((c) => c.cityKey === cityKey)
+  if (own.length === 0) return []
+
+  const centLat = own.reduce((s, c) => s + c.latitude, 0) / own.length
+  const centLon = own.reduce((s, c) => s + c.longitude, 0) / own.length
+
+  return all
+    .filter((c) => c.cityKey !== cityKey)
+    .map((c) => ({ ...c, distanceKm: haversineKm(centLat, centLon, c.latitude, c.longitude) }))
+    .filter((c) => c.distanceKm <= radiusKm)
+    .sort((a, b) => a.distanceKm - b.distanceKm)
 }
 
 // ─── Fiche relations ──────────────────────────────────────────────

@@ -84,6 +84,16 @@ export async function getAllParisArrKeys(): Promise<string[]> {
 
 // ─── Spec 09 helpers ──────────────────────────────────────────────
 
+// City keys with < 3 cabinets, excluding Paris arrondissements (paris-750xx).
+// Used by generateStaticParams for the thin city template (spec 10).
+export async function getAllThinCityKeys(): Promise<string[]> {
+  const rows = await prisma.city.findMany({
+    where: { NOT: { key: { startsWith: 'paris-750' } } },
+    select: { key: true, _count: { select: { cabinets: { where: { isDeleted: false } } } } },
+  })
+  return rows.filter((r) => r._count.cabinets < 3).map((r) => r.key)
+}
+
 // City keys with ≥3 cabinets, excluding Paris arrondissements (paris-750xx).
 // paris-75 (global) does NOT start with 'paris-750' and is intentionally included.
 export async function getAllNormalCityKeys(): Promise<string[]> {
