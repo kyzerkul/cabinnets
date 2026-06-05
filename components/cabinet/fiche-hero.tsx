@@ -1,10 +1,7 @@
 import Image from 'next/image'
-import { Phone, Globe } from 'lucide-react'
-import { buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { RatingStars } from '@/components/ui/rating-stars'
 import { Container } from '@/components/ui/container'
-import { cn } from '@/lib/utils'
 import type { CabinetWithRelations } from '@/lib/types'
 import { formatCityDisplay, formatZipShort } from '@/lib/seo'
 
@@ -58,31 +55,6 @@ export function FicheHero({ cabinet }: FicheHeroProps) {
             )}
 
             <p className="text-sm text-muted-foreground mt-2">{cabinet.address}</p>
-
-            <div className="flex flex-wrap gap-3 mt-4">
-              {cabinet.phoneE164 && (
-                <a
-                  href={`tel:${cabinet.phoneE164}`}
-                  aria-label={`Appeler ${cabinet.title}`}
-                  className={cn(buttonVariants({ size: 'sm' }))}
-                >
-                  <Phone className="h-4 w-4 mr-1.5" aria-hidden="true" />
-                  {cabinet.phoneDisplay ?? cabinet.phoneE164}
-                </a>
-              )}
-              {cabinet.url && (
-                <a
-                  href={cabinet.url}
-                  rel="nofollow noopener noreferrer"
-                  target="_blank"
-                  aria-label={`Site web de ${cabinet.title}`}
-                  className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
-                >
-                  <Globe className="h-4 w-4 mr-1.5" aria-hidden="true" />
-                  Site web
-                </a>
-              )}
-            </div>
           </div>
         </div>
       </Container>

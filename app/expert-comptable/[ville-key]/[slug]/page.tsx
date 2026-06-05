@@ -76,10 +76,12 @@ export default async function FicheCabinetPage({ params }: Props) {
   // 404 if not found or accessed via wrong ville-key
   if (!cabinet || cabinet.cityKey !== villeKey) notFound()
 
-  const [proches, pas] = await Promise.all([
+  const [prochesResult, pasResult] = await Promise.allSettled([
     getCabinetsProches(cabinet),
     getPeopleAlsoSearchCabinets(cabinet),
   ])
+  const proches = prochesResult.status === 'fulfilled' ? prochesResult.value : []
+  const pas = pasResult.status === 'fulfilled' ? pasResult.value : []
 
   const city = cabinet.city
   const dept = city.department
@@ -137,6 +139,9 @@ export default async function FicheCabinetPage({ params }: Props) {
                 </div>
               )}
 
+              {/* CTA devis en colonne principale — visible dès le premier scroll mobile */}
+              <RequestQuoteSlot />
+
               {(cabinet.services.length > 0 ||
                 cabinet.secteurs.length > 0 ||
                 cabinet.languesEtrangeres.length > 0) && (
@@ -147,8 +152,6 @@ export default async function FicheCabinetPage({ params }: Props) {
                 />
               )}
 
-              {cabinet.workHours && <OpeningHours workHours={cabinet.workHours} />}
-
               <div>
                 <h2 className="text-lg font-semibold mb-3">Localisation</h2>
                 <MapEmbed
@@ -157,6 +160,8 @@ export default async function FicheCabinetPage({ params }: Props) {
                   name={cabinet.title}
                 />
               </div>
+
+              {cabinet.workHours && <OpeningHours workHours={cabinet.workHours} />}
 
               {hasLegalInfo && (
                 <div>
@@ -187,9 +192,8 @@ export default async function FicheCabinetPage({ params }: Props) {
               )}
             </div>
 
-            {/* ── Sidebar ── */}
+            {/* ── Sidebar (desktop uniquement en pratique) ── */}
             <div className="space-y-4">
-              <RequestQuoteSlot />
               <ContactBlock cabinet={cabinet} />
               <ClaimCta cabinetName={cabinet.title} />
             </div>

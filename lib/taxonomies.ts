@@ -11,7 +11,7 @@ export const SERVICES: Record<string, string> = {
   digitalisation: 'Digitalisation',
   international: 'International',
   'transmission-entreprise': "Transmission d'entreprise",
-  'previsionnel-business-plan': 'Business plan',
+  'previsionnel-business-plan': 'Prévisionnel / business plan',
   formation: 'Formation',
   recouvrement: 'Recouvrement',
 }

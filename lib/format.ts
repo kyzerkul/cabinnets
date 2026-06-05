@@ -23,7 +23,19 @@ export const DAY_ORDER = [
 
 export function parseWorkHours(raw: unknown): WorkHours | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
-  return raw as WorkHours
+  const result: WorkHours = {}
+  for (const [key, value] of Object.entries(raw)) {
+    if (!Array.isArray(value)) continue
+    const slots = value.filter(
+      (slot): slot is DaySlot =>
+        typeof slot === 'object' &&
+        slot !== null &&
+        typeof (slot as Record<string, unknown>).open === 'string' &&
+        typeof (slot as Record<string, unknown>).close === 'string',
+    )
+    if (slots.length > 0) result[key] = slots
+  }
+  return Object.keys(result).length > 0 ? result : null
 }
 
 export function formatSlots(slots: DaySlot[]): string {
