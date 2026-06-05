@@ -189,8 +189,8 @@ export default async function FicheCabinetPage({ params }: Props) {
 
             {/* ── Sidebar ── */}
             <div className="space-y-4">
-              <ContactBlock cabinet={cabinet} />
               <RequestQuoteSlot />
+              <ContactBlock cabinet={cabinet} />
               <ClaimCta cabinetName={cabinet.title} />
             </div>
           </div>
