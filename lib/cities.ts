@@ -13,6 +13,9 @@ export type NearbyCityResult = {
   distanceKm: number
 }
 
+// True during `next build` (NODE_ENV=production). False during `next dev`.
+const IS_BUILD = process.env.NODE_ENV === 'production'
+
 // ─── Module-level caches (derived from master cabinet query — 0 extra DB calls) ─
 
 // Map cityKey → CityWithDept, built from the full-relations cabinet cache.
@@ -34,16 +37,28 @@ function getAllCitiesWithDeptForSsg(): Promise<Map<string, CityWithDept>> {
 // ─── Single lookups ───────────────────────────────────────────────
 
 export async function getDeptBySlug(slug: string): Promise<DeptWithRegion | null> {
+  if (!IS_BUILD) {
+    return prisma.department.findFirst({ where: { slug }, include: { region: true } })
+  }
   const all = await getAllDeptsForSsg()
   return all.find((d) => d.slug === slug) ?? null
 }
 
 export async function getCity(key: string): Promise<CityWithDept | null> {
+  if (!IS_BUILD) {
+    return prisma.city.findUnique({
+      where: { key },
+      include: { department: { include: { region: true } } },
+    })
+  }
   const map = await getAllCitiesWithDeptForSsg()
   return map.get(key) ?? null
 }
 
 export async function getDept(code: string): Promise<DeptWithRegion | null> {
+  if (!IS_BUILD) {
+    return prisma.department.findFirst({ where: { code }, include: { region: true } })
+  }
   const all = await getAllDeptsForSsg()
   return all.find((d) => d.code === code) ?? null
 }
@@ -61,7 +76,7 @@ export async function getCitiesByDept(dptCode: string): Promise<City[]> {
   })
 }
 
-// All departments with region, derived from cabinet cache — 0 extra DB queries.
+// All departments with region, derived from cabinet cache at build time.
 // Sorted by name for predictable ordering in dept list pages.
 let _allDeptsPromise: Promise<DeptWithRegion[]> | null = null
 
@@ -80,6 +95,9 @@ function getAllDeptsForSsg(): Promise<DeptWithRegion[]> {
 }
 
 export async function getDeptsByRegion(regionCode: string): Promise<Department[]> {
+  if (!IS_BUILD) {
+    return prisma.department.findMany({ where: { regionCode }, orderBy: { name: 'asc' } })
+  }
   const all = await getAllDeptsForSsg()
   return all.filter((d) => d.regionCode === regionCode)
 }
@@ -89,6 +107,7 @@ export async function getAllRegions(): Promise<Region[]> {
 }
 
 export async function getAllDepts(): Promise<Department[]> {
+  if (!IS_BUILD) return prisma.department.findMany({ orderBy: { name: 'asc' } })
   return getAllDeptsForSsg()
 }
 
@@ -178,14 +197,72 @@ export function getCitiesByDeptWithCount(
   return _citiesByDeptCache.get(dptCode)!
 }
 
-// Uses the SSG cabinet cache (getAllCabinetsForSsg) for in-memory haversine.
-// Replaces the previous 2-DB-query implementation and eliminates ~1 964 DB
-// queries per worker over the full ville-page build (982 pages × 2 queries).
-// Requires city.dptCode in CabinetSsgEntry (added alongside this change).
+// At build time: uses the SSG cabinet cache for in-memory haversine — eliminates
+// ~1 964 DB queries per worker. In dev: 2 targeted DB queries (bounding-box +
+// centroid) to avoid the master cache cold-start.
 export async function getNearbyNormalCities(
   cityKey: string,
   limit = 5,
 ): Promise<NearbyCityResult[]> {
+  if (!IS_BUILD) {
+    const ownCabs = await prisma.cabinet.findMany({
+      where: { cityKey, isDeleted: false },
+      select: { latitude: true, longitude: true },
+    })
+    if (ownCabs.length === 0) return []
+    const centLat = ownCabs.reduce((s, c) => s + c.latitude, 0) / ownCabs.length
+    const centLon = ownCabs.reduce((s, c) => s + c.longitude, 0) / ownCabs.length
+    const radiusKm = 50
+    const latRange = radiusKm / 111
+    const lonRange = radiusKm / (111 * Math.cos((centLat * Math.PI) / 180))
+    const nearby = await prisma.cabinet.findMany({
+      where: {
+        isDeleted: false,
+        NOT: { cityKey },
+        latitude: { gte: centLat - latRange, lte: centLat + latRange },
+        longitude: { gte: centLon - lonRange, lte: centLon + lonRange },
+      },
+      select: {
+        cityKey: true,
+        latitude: true,
+        longitude: true,
+        city: { select: { name: true, zip: true, dptCode: true } },
+      },
+    })
+    const cityMap = new Map<
+      string,
+      { name: string; zip: string; dptCode: string; count: number; minDist: number }
+    >()
+    for (const c of nearby) {
+      const dist = haversineKm(centLat, centLon, c.latitude, c.longitude)
+      if (dist > radiusKm) continue
+      const entry = cityMap.get(c.cityKey)
+      if (!entry) {
+        cityMap.set(c.cityKey, {
+          name: c.city.name,
+          zip: c.city.zip,
+          dptCode: c.city.dptCode,
+          count: 1,
+          minDist: dist,
+        })
+      } else {
+        entry.count++
+        entry.minDist = Math.min(entry.minDist, dist)
+      }
+    }
+    return Array.from(cityMap.entries())
+      .map(([key, v]) => ({
+        key,
+        name: v.name,
+        zip: v.zip,
+        dptCode: v.dptCode,
+        cabinetCount: v.count,
+        distanceKm: v.minDist,
+      }))
+      .sort((a, b) => a.distanceKm - b.distanceKm)
+      .slice(0, limit)
+  }
+
   const all = await getAllCabinetsForSsg()
   const own = all.filter((c) => c.cityKey === cityKey)
   if (own.length === 0) return []

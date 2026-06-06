@@ -11,10 +11,14 @@ const SORT = [
   { ratingCount: { sort: 'desc' as const, nulls: 'last' as const } },
 ]
 
+// True during `next build` (NODE_ENV=production). False during `next dev`.
+// In dev, skip the master cache and use targeted Prisma queries to avoid the
+// 60-120s Neon cold-start penalty on the first page request.
+const IS_BUILD = process.env.NODE_ENV === 'production'
+
 // ─── Master SSG cache ─────────────────────────────────────────────
-// ONE query per worker. Loads all 1 996 cabinets with full city+dept+region.
-// All other in-memory helpers (getCabinet, getCabinetsByCity, getCabinetsProches,
-// countByDept/Region, etc.) derive from this single Promise.
+// ONE query per worker at build time. Loads all 1 996 cabinets with full
+// city+dept+region. All in-memory helpers derive from this single Promise.
 // Exported so cities.ts can derive its city/dept/region maps from the same data.
 
 let _allWithRelationsPromise: Promise<CabinetWithRelations[]> | null = null
@@ -33,6 +37,12 @@ export function getAllCabinetsWithRelationsForSsg(): Promise<CabinetWithRelation
 // ─── Single cabinet ───────────────────────────────────────────────
 
 export async function getCabinet(slug: string): Promise<CabinetWithRelations | null> {
+  if (!IS_BUILD) {
+    return prisma.cabinet.findFirst({
+      where: { slug, isDeleted: false },
+      include: { city: { include: { department: { include: { region: true } } } } },
+    })
+  }
   const all = await getAllCabinetsWithRelationsForSsg()
   return all.find((c) => c.slug === slug) ?? null
 }
@@ -40,6 +50,14 @@ export async function getCabinet(slug: string): Promise<CabinetWithRelations | n
 // ─── By city ──────────────────────────────────────────────────────
 
 export async function getCabinetsByCity(cityKey: string): Promise<CabinetForCard[]> {
+  if (!IS_BUILD) {
+    const rows = await prisma.cabinet.findMany({
+      where: { cityKey, isDeleted: false },
+      include: { city: true },
+      orderBy: SORT,
+    })
+    return rows as unknown as CabinetForCard[]
+  }
   const all = await getAllCabinetsForSsg()
   return all.filter((c) => c.cityKey === cityKey)
 }
@@ -88,6 +106,15 @@ export async function getCabinetsByDept(
   dptCode: string,
   limit?: number,
 ): Promise<CabinetForCard[]> {
+  if (!IS_BUILD) {
+    const rows = await prisma.cabinet.findMany({
+      where: { city: { dptCode }, isDeleted: false },
+      include: { city: true },
+      orderBy: SORT,
+      ...(limit !== undefined ? { take: limit } : {}),
+    })
+    return rows as unknown as CabinetForCard[]
+  }
   const all = await getAllCabinetsWithRelationsForSsg()
   const filtered = all.filter((c) => c.city.dptCode === dptCode)
   return limit !== undefined ? filtered.slice(0, limit) : filtered
@@ -97,6 +124,15 @@ export async function getCabinetsByRegion(
   regionCode: string,
   limit?: number,
 ): Promise<CabinetForCard[]> {
+  if (!IS_BUILD) {
+    const rows = await prisma.cabinet.findMany({
+      where: { city: { department: { regionCode } }, isDeleted: false },
+      include: { city: true },
+      orderBy: SORT,
+      ...(limit !== undefined ? { take: limit } : {}),
+    })
+    return rows as unknown as CabinetForCard[]
+  }
   const all = await getAllCabinetsWithRelationsForSsg()
   const filtered = all.filter((c) => c.city.department.regionCode === regionCode)
   return limit !== undefined ? filtered.slice(0, limit) : filtered
@@ -114,16 +150,21 @@ export async function getAllCabinetSlugs(): Promise<{ slug: string; cityKey: str
 // ─── Counts ───────────────────────────────────────────────────────
 
 export async function countCabinetsByCity(cityKey: string): Promise<number> {
+  if (!IS_BUILD) return prisma.cabinet.count({ where: { cityKey, isDeleted: false } })
   const all = await getAllCabinetsForSsg()
   return all.filter((c) => c.cityKey === cityKey).length
 }
 
 export async function countCabinetsByDept(dptCode: string): Promise<number> {
+  if (!IS_BUILD) return prisma.cabinet.count({ where: { city: { dptCode }, isDeleted: false } })
   const all = await getAllCabinetsForSsg()
   return all.filter((c) => c.city.dptCode === dptCode).length
 }
 
 export async function countCabinetsByRegion(regionCode: string): Promise<number> {
+  if (!IS_BUILD) {
+    return prisma.cabinet.count({ where: { city: { department: { regionCode } }, isDeleted: false } })
+  }
   const all = await getAllCabinetsWithRelationsForSsg()
   return all.filter((c) => c.city.department.regionCode === regionCode).length
 }
@@ -140,11 +181,16 @@ export function getAllCabinetsForSsg(): Promise<CabinetSsgEntry[]> {
 }
 
 // In-memory variant for thin-city pages: uses the SSG cache to avoid 2 DB
-// queries per page. Returns CabinetForCard (subset of fields) with distanceKm.
+// queries per page at build time. In dev, delegates to getCabinetsNearCity
+// (2 targeted queries) to avoid the master cache cold-start penalty.
 export async function getCabinetsNearCityFast(
   cityKey: string,
   radiusKm = 20,
 ): Promise<(CabinetForCard & { distanceKm: number })[]> {
+  if (!IS_BUILD) {
+    const result = await getCabinetsNearCity(cityKey, radiusKm)
+    return result as unknown as (CabinetForCard & { distanceKm: number })[]
+  }
   const all = await getAllCabinetsForSsg()
   const own = all.filter((c) => c.cityKey === cityKey)
   if (own.length === 0) return []
@@ -161,20 +207,25 @@ export async function getCabinetsNearCityFast(
 
 // ─── Fiche relations ──────────────────────────────────────────────
 
-// Up to `limit` cabinets in the same city, excluding the current one.
-// Uses SSG cache — eliminates 1 DB query per fiche page (×1 996 pages).
 export async function getCabinetsProches(
   cabinet: Pick<CabinetWithRelations, 'slug' | 'cityKey'>,
   limit = 6,
 ): Promise<CabinetForCard[]> {
+  if (!IS_BUILD) {
+    const rows = await prisma.cabinet.findMany({
+      where: { cityKey: cabinet.cityKey, slug: { not: cabinet.slug }, isDeleted: false },
+      include: { city: true },
+      orderBy: SORT,
+      take: limit,
+    })
+    return rows as unknown as CabinetForCard[]
+  }
   const all = await getAllCabinetsForSsg()
   return all
     .filter((c) => c.cityKey === cabinet.cityKey && c.slug !== cabinet.slug)
     .slice(0, limit)
 }
 
-// Matches featureIds from peopleAlsoSearch JSON against our cabinets.
-// Uses SSG cache (featureId field) — eliminates 1 DB query per fiche page.
 export async function getPeopleAlsoSearchCabinets(
   cabinet: Pick<CabinetWithRelations, 'peopleAlsoSearch'>,
   limit = 5,
@@ -189,6 +240,15 @@ export async function getPeopleAlsoSearchCabinets(
   )
   if (featureIds.size === 0) return []
 
+  if (!IS_BUILD) {
+    const rows = await prisma.cabinet.findMany({
+      where: { featureId: { in: [...featureIds] }, isDeleted: false },
+      include: { city: true },
+      orderBy: SORT,
+      take: limit,
+    })
+    return rows as unknown as CabinetForCard[]
+  }
   const all = await getAllCabinetsForSsg()
   return all.filter((c) => c.featureId !== null && featureIds.has(c.featureId)).slice(0, limit)
 }

@@ -49,7 +49,7 @@ export default async function DeptPage({ params }: Props) {
   if (!dept) notFound()
 
   const [cabinets, cities, siblingDepts, totalCount] = await Promise.all([
-    getCabinetsByDept(dept.code, 12),
+    getCabinetsByDept(dept.code),
     getCitiesByDeptWithCount(dept.code),
     getDeptsByRegion(dept.region.code),
     countCabinetsByDept(dept.code),
@@ -105,6 +105,12 @@ export default async function DeptPage({ params }: Props) {
         </div>
 
         <Section>
+          <h2 className="text-xl font-semibold mb-6">
+            Cabinets comptables — {dept.name}{' '}
+            <span className="text-muted-foreground font-normal text-base">
+              ({cabinets.length} résultat{cabinets.length > 1 ? 's' : ''})
+            </span>
+          </h2>
           <CabinetGrid cabinets={cabinets} />
         </Section>
 
