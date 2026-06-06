@@ -211,7 +211,7 @@ export function buildCollectionPageJsonLd(p: {
   url: string
   name: string
   description: string
-  cabinets: CabinetWithCity[]
+  cabinets: Array<{ title: string; cityKey: string; slug: string }>
 }): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
