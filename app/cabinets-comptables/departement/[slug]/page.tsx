@@ -98,8 +98,8 @@ export default async function DeptPage({ params }: Props) {
           </h1>
           <p className="mt-3">
             <Badge variant="secondary">
-              {totalCount} expert{totalCount > 1 ? 's' : ''}-comptable
-              {totalCount > 1 ? 's' : ''} référencés
+              {totalCount} expert{totalCount !== 1 ? 's' : ''}-comptable
+              {totalCount !== 1 ? 's' : ''} référencés
             </Badge>
           </p>
         </div>
@@ -108,7 +108,7 @@ export default async function DeptPage({ params }: Props) {
           <h2 className="text-xl font-semibold mb-6">
             Cabinets comptables — {dept.name}{' '}
             <span className="text-muted-foreground font-normal text-base">
-              ({cabinets.length} résultat{cabinets.length > 1 ? 's' : ''})
+              ({cabinets.length} résultat{cabinets.length !== 1 ? 's' : ''})
             </span>
           </h2>
           <CabinetGrid cabinets={cabinets} />
@@ -118,7 +118,7 @@ export default async function DeptPage({ params }: Props) {
           <h2 className="text-xl font-semibold mb-6">
             Villes du {dept.name}{' '}
             <span className="text-muted-foreground font-normal text-base">
-              ({cities.length} ville{cities.length > 1 ? 's' : ''})
+              ({cities.length} ville{cities.length !== 1 ? 's' : ''})
             </span>
           </h2>
           <DeptCitiesGrid cities={cities} />
