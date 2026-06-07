@@ -19,8 +19,8 @@ import { Container } from '@/components/ui/container'
 import { Section } from '@/components/ui/section'
 import { Badge } from '@/components/ui/badge'
 import { SiteBreadcrumb } from '@/components/layout/breadcrumb'
-import { CabinetGrid } from '@/components/listing/cabinet-grid'
 import { RegionDeptsGrid } from '@/components/listing/region-depts-grid'
+import { ExpandableCabinetGrid } from '@/components/listing/expandable-cabinet-grid'
 import { JsonLd } from '@/components/seo/json-ld'
 
 export const dynamicParams = false
@@ -53,13 +53,13 @@ export default async function RegionPage({ params }: Props) {
   const region = await getRegionBySlug(slug)
   if (!region) notFound()
 
-  const [cabinets, depts, topCities, totalCount, allRegions] = await Promise.all([
-    getCabinetsByRegion(region.code, 12),
+  const [cabinets, depts, topCities, allRegions] = await Promise.all([
+    getCabinetsByRegion(region.code),
     getDeptsByRegion(region.code),
     getTopCitiesByRegion(region.code, 12),
-    countCabinetsByRegion(region.code),
     getAllRegions(),
   ])
+  const totalCount = cabinets.length
 
   const deptsWithCount = await Promise.all(
     depts.map(async (d) => ({ ...d, cabinetCount: await countCabinetsByDept(d.code) })),
@@ -104,7 +104,10 @@ export default async function RegionPage({ params }: Props) {
         </div>
 
         <Section>
-          <CabinetGrid cabinets={cabinets} />
+          <h2 className="text-xl font-semibold mb-6">
+            Cabinets les mieux notés en {region.name}
+          </h2>
+          <ExpandableCabinetGrid cabinets={cabinets} initialCount={12} />
         </Section>
 
         <Section>
