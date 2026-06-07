@@ -307,6 +307,48 @@ export async function getNearbyNormalCities(
     .slice(0, limit)
 }
 
+// ─── Region lookups ───────────────────────────────────────────────
+
+export async function getRegionBySlug(slug: string): Promise<Region | null> {
+  if (!IS_BUILD) {
+    return prisma.region.findFirst({ where: { slug } })
+  }
+  const master = await getAllCabinetsWithRelationsForSsg()
+  const found = master.find((c) => c.city.department.region.slug === slug)
+  return found?.city.department.region ?? null
+}
+
+export async function getTopCitiesByRegion(
+  regionCode: string,
+  limit = 12,
+): Promise<{ key: string; name: string; zip: string; cabinetCount: number }[]> {
+  if (IS_BUILD) {
+    const master = await getAllCabinetsWithRelationsForSsg()
+    const byCity = new Map<string, { key: string; name: string; zip: string; count: number }>()
+    for (const c of master) {
+      if (c.city.department.region.code !== regionCode) continue
+      const entry = byCity.get(c.cityKey)
+      if (entry) {
+        entry.count++
+      } else {
+        byCity.set(c.cityKey, { key: c.cityKey, name: c.city.name, zip: c.city.zip, count: 1 })
+      }
+    }
+    return [...byCity.values()]
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit)
+      .map(({ key, name, zip, count }) => ({ key, name, zip, cabinetCount: count }))
+  }
+
+  const depts = await getDeptsByRegion(regionCode)
+  const allCities: { key: string; name: string; zip: string; cabinetCount: number }[] = []
+  for (const d of depts) {
+    const cities = await getCitiesByDeptWithCount(d.code)
+    allCities.push(...cities)
+  }
+  return allCities.sort((a, b) => b.cabinetCount - a.cabinetCount).slice(0, limit)
+}
+
 // ─── Counts ───────────────────────────────────────────────────────
 
 export async function countCitiesByDept(dptCode: string): Promise<number> {
