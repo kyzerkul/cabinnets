@@ -27,7 +27,7 @@ export function SiteBreadcrumb({ items }: SiteBreadcrumbProps) {
             {items.map((item, index) => {
               const isLast = index === items.length - 1
               return (
-                <React.Fragment key={item.href ?? item.label}>
+                <React.Fragment key={`${item.href ?? item.label}-${index}`}>
                   <BreadcrumbItem>
                     {item.href && !isLast ? (
                       <Link
