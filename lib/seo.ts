@@ -1,4 +1,4 @@
-import type { CabinetWithCity, CabinetWithRelations, City } from '@/lib/types'
+import type { CabinetWithRelations, City } from '@/lib/types'
 
 export const SITE_NAME = 'Cabinets Comptables FR'
 
@@ -71,6 +71,16 @@ export function buildArrTitle(p: {
 }): string {
   const ville = formatCityDisplay(p.city)
   return `Cabinets comptables à ${ville} (${p.city.zip}) : ${p.count} experts-comptables — Annuaire ${YEAR}`
+}
+
+export function buildArrDescription(p: {
+  city: Pick<City, 'key' | 'name' | 'zip'>
+  count: number
+}): string {
+  const ville = formatCityDisplay(p.city)
+  return truncate(
+    `Annuaire des ${p.count} cabinet${p.count > 1 ? 's' : ''} comptable${p.count > 1 ? 's' : ''} à ${ville} (${p.city.zip}). Comparez les experts-comptables : avis, horaires, spécialités, contacts.`,
+  )
 }
 
 export function buildDeptTitle(p: { dptName: string; dptCode: string; count: number }): string {

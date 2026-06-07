@@ -5,12 +5,16 @@ import Link from 'next/link'
 import {
   getAllNormalCityKeys,
   getAllThinCityKeys,
+  getAllParisArrKeys,
   getCity,
   getCitiesByDeptWithCount,
   getNearbyNormalCities,
+  getParisArrondissementsWithCount,
 } from '@/lib/cities'
 import { getCabinetsByCity, countCabinetsByDept, getCabinetsNearCityFast } from '@/lib/cabinets'
 import {
+  buildArrTitle,
+  buildArrDescription,
   buildVilleTitle,
   buildVilleDescription,
   buildVilleThinTitle,
@@ -25,6 +29,7 @@ import { Container } from '@/components/ui/container'
 import { Section } from '@/components/ui/section'
 import { SiteBreadcrumb } from '@/components/layout/breadcrumb'
 import { JsonLd } from '@/components/seo/json-ld'
+import { ArrondissementsGrid } from '@/components/listing/arrondissements-grid'
 import { ListingHeader } from '@/components/listing/listing-header'
 import { ThinListingHeader } from '@/components/listing/thin-listing-header'
 import { CabinetGrid } from '@/components/listing/cabinet-grid'
@@ -51,11 +56,12 @@ const loadPageData = cache(async (cityKey: string) => {
 const loadNearbyCabinets = cache((cityKey: string) => getCabinetsNearCityFast(cityKey, 20))
 
 export async function generateStaticParams() {
-  const [normalKeys, thinKeys] = await Promise.all([
+  const [normalKeys, thinKeys, arrKeys] = await Promise.all([
     getAllNormalCityKeys(),
     getAllThinCityKeys(),
+    getAllParisArrKeys(),
   ])
-  return [...normalKeys, ...thinKeys].map((k) => ({ 'ville-key': k }))
+  return [...normalKeys, ...thinKeys, ...arrKeys].map((k) => ({ 'ville-key': k }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -65,6 +71,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { city, cabinets } = data
   const canonical = canonicalUrl(`/cabinets-comptables/${cityKey}`)
 
+  // ── Paris arrondissement ──────────────────────────────────────────
+  if (cityKey.startsWith('paris-750')) {
+    const count = cabinets.length
+    const title = buildArrTitle({ city, count })
+    const description = buildArrDescription({ city, count })
+    return {
+      title,
+      description,
+      alternates: { canonical },
+      openGraph: { title, description, url: canonical },
+    }
+  }
+
+  // ── Normal (≥3 cabinets) ──────────────────────────────────────────
   if (cabinets.length >= 3) {
     const count = cabinets.length
     const title = buildVilleTitle({ city, dptCode: city.dptCode, count })
@@ -77,6 +97,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
+  // ── Thin (<3 cabinets) ────────────────────────────────────────────
   const nearbyCabinets = await loadNearbyCabinets(cityKey)
   const title = buildVilleThinTitle({ city, dptCode: city.dptCode })
   const description = buildVilleThinDescription({
@@ -95,9 +116,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function VillePage({ params }: Props) {
   const cityKey = (await params)['ville-key']
 
-  // Paris arrondissements are handled in spec 12b
-  if (cityKey.startsWith('paris-750') && cityKey !== 'paris-75') notFound()
-
   const data = await loadPageData(cityKey)
   if (!data) notFound()
   const { city, cabinets, citiesDept, nearbyCities, deptCount } = data
@@ -106,6 +124,86 @@ export default async function VillePage({ params }: Props) {
   const region = dept.region
   const cityDisplay = formatCityDisplay(city)
   const zipShort = formatZipShort(city, city.dptCode)
+
+  // ── Paris arrondissement ──────────────────────────────────────
+  if (cityKey.startsWith('paris-750')) {
+    if (cabinets.length === 0) notFound()
+
+    const arrondissements = await getParisArrondissementsWithCount()
+    const count = cabinets.length
+    const pageUrl = canonicalUrl(`/cabinets-comptables/${cityKey}`)
+    const arrDescription = buildArrDescription({ city, count })
+
+    const breadcrumbEntries = [
+      { name: 'Accueil', url: canonicalUrl('/') },
+      { name: region.name, url: canonicalUrl(`/cabinets-comptables/region/${region.slug}`) },
+      {
+        name: `${dept.name} (${dept.code})`,
+        url: canonicalUrl(`/cabinets-comptables/departement/${dept.slug}`),
+      },
+      { name: `Cabinets comptables à ${cityDisplay}` },
+    ]
+    const breadcrumbItems = [
+      { label: 'Accueil', href: '/' },
+      { label: region.name, href: `/cabinets-comptables/region/${region.slug}` },
+      { label: `${dept.name} (${dept.code})`, href: `/cabinets-comptables/departement/${dept.slug}` },
+      { label: `Cabinets comptables à ${cityDisplay}` },
+    ]
+
+    return (
+      <>
+        <JsonLd
+          data={buildCollectionPageJsonLd({
+            url: pageUrl,
+            name: buildArrTitle({ city, count }),
+            description: arrDescription,
+            cabinets: cabinets.slice(0, 10),
+          })}
+        />
+        <JsonLd data={buildBreadcrumbsJsonLd(breadcrumbEntries)} />
+
+        <SiteBreadcrumb items={breadcrumbItems} />
+
+        <Section className="border-b bg-secondary/30">
+          <Container size="wide">
+            <ListingHeader
+              cityDisplay={cityDisplay}
+              zipShort={zipShort}
+              count={count}
+              description={arrDescription}
+            />
+          </Container>
+        </Section>
+
+        <Section>
+          <Container size="wide">
+            <CabinetGrid cabinets={cabinets} />
+          </Container>
+        </Section>
+
+        <Section className="border-t bg-secondary/20">
+          <Container size="wide">
+            <h2 className="text-xl font-semibold mb-6">Les 20 arrondissements de Paris</h2>
+            <ArrondissementsGrid arrondissements={arrondissements} currentKey={cityKey} />
+            <div className="flex flex-wrap gap-3 pt-6 mt-6 border-t">
+              <Link
+                href={`/cabinets-comptables/departement/${dept.slug}`}
+                className="text-sm hover:underline text-muted-foreground"
+              >
+                ← Voir les cabinets dans le {dept.name} ({dept.code})
+              </Link>
+              <Link
+                href={`/cabinets-comptables/region/${region.slug}`}
+                className="text-sm hover:underline text-muted-foreground"
+              >
+                ← Cabinets comptables en {region.name}
+              </Link>
+            </div>
+          </Container>
+        </Section>
+      </>
+    )
+  }
 
   // ── Thin template (< 3 cabinets) ──────────────────────────────
   if (cabinets.length < 3) {

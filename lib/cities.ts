@@ -372,6 +372,39 @@ export async function getTopCitiesByRegion(
 
 // ─── Counts ───────────────────────────────────────────────────────
 
+export async function getParisArrondissementsWithCount(): Promise<
+  { key: string; zip: string; cabinetCount: number }[]
+> {
+  if (IS_BUILD) {
+    const master = await getAllCabinetsWithRelationsForSsg()
+    const byArr = new Map<string, { key: string; zip: string; count: number }>()
+    for (const c of master) {
+      if (!c.cityKey.startsWith('paris-750')) continue
+      const entry = byArr.get(c.cityKey)
+      if (entry) {
+        entry.count++
+      } else {
+        byArr.set(c.cityKey, { key: c.cityKey, zip: c.city.zip, count: 1 })
+      }
+    }
+    return [...byArr.values()]
+      .sort((a, b) => a.zip.localeCompare(b.zip))
+      .map(({ key, zip, count }) => ({ key, zip, cabinetCount: count }))
+  }
+  // Dev: targeted queries, 20 rows
+  const keys = await getAllParisArrKeys()
+  const results = await Promise.all(
+    keys.map(async (key) => {
+      const city = await prisma.city.findUnique({
+        where: { key },
+        select: { zip: true, _count: { select: { cabinets: { where: { isDeleted: false } } } } },
+      })
+      return { key, zip: city?.zip ?? '', cabinetCount: city?._count?.cabinets ?? 0 }
+    }),
+  )
+  return results.sort((a, b) => a.zip.localeCompare(b.zip))
+}
+
 export async function countCitiesByDept(dptCode: string): Promise<number> {
   return prisma.city.count({ where: { dptCode } })
 }
