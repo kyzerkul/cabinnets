@@ -102,8 +102,27 @@ export async function getDeptsByRegion(regionCode: string): Promise<Department[]
   return all.filter((d) => d.regionCode === regionCode)
 }
 
+// All regions derived from master cabinet cache at build time — consistent with
+// getRegionBySlug so generateStaticParams and slug resolution use the same dataset.
+let _allRegionsPromise: Promise<Region[]> | null = null
+
+function getAllRegionsForSsg(): Promise<Region[]> {
+  if (!_allRegionsPromise) {
+    _allRegionsPromise = getAllCabinetsWithRelationsForSsg().then((cabinets) => {
+      const regionMap = new Map<string, Region>()
+      for (const c of cabinets) {
+        const r = c.city.department.region
+        if (!regionMap.has(r.code)) regionMap.set(r.code, r)
+      }
+      return Array.from(regionMap.values()).sort((a, b) => a.name.localeCompare(b.name, 'fr'))
+    })
+  }
+  return _allRegionsPromise
+}
+
 export async function getAllRegions(): Promise<Region[]> {
-  return prisma.region.findMany({ orderBy: { name: 'asc' } })
+  if (!IS_BUILD) return prisma.region.findMany({ orderBy: { name: 'asc' } })
+  return getAllRegionsForSsg()
 }
 
 export async function getAllDepts(): Promise<Department[]> {
@@ -304,6 +323,50 @@ export async function getNearbyNormalCities(
       distanceKm: v.minDist,
     }))
     .sort((a, b) => a.distanceKm - b.distanceKm)
+    .slice(0, limit)
+}
+
+// ─── Region lookups ───────────────────────────────────────────────
+
+export async function getRegionBySlug(slug: string): Promise<Region | null> {
+  if (!IS_BUILD) {
+    return prisma.region.findFirst({ where: { slug } })
+  }
+  const master = await getAllCabinetsWithRelationsForSsg()
+  const found = master.find((c) => c.city.department.region.slug === slug)
+  return found?.city.department.region ?? null
+}
+
+export async function getTopCitiesByRegion(
+  regionCode: string,
+  limit = 12,
+): Promise<{ key: string; name: string; zip: string; cabinetCount: number }[]> {
+  if (IS_BUILD) {
+    const master = await getAllCabinetsWithRelationsForSsg()
+    const byCity = new Map<string, { key: string; name: string; zip: string; count: number }>()
+    for (const c of master) {
+      if (c.city.department.region.code !== regionCode) continue
+      const entry = byCity.get(c.cityKey)
+      if (entry) {
+        entry.count++
+      } else {
+        byCity.set(c.cityKey, { key: c.cityKey, name: c.city.name, zip: c.city.zip, count: 1 })
+      }
+    }
+    return [...byCity.values()]
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'fr'))
+      .slice(0, limit)
+      .map(({ key, name, zip, count }) => ({ key, name, zip, cabinetCount: count }))
+  }
+
+  const depts = await getDeptsByRegion(regionCode)
+  const allCities: { key: string; name: string; zip: string; cabinetCount: number }[] = []
+  for (const d of depts) {
+    const cities = await getCitiesByDeptWithCount(d.code)
+    allCities.push(...cities)
+  }
+  return allCities
+    .sort((a, b) => b.cabinetCount - a.cabinetCount || a.name.localeCompare(b.name, 'fr'))
     .slice(0, limit)
 }
 
