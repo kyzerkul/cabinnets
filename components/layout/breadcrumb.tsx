@@ -1,3 +1,4 @@
+import React from 'react'
 import Link from 'next/link'
 import {
   Breadcrumb,
@@ -26,21 +27,23 @@ export function SiteBreadcrumb({ items }: SiteBreadcrumbProps) {
             {items.map((item, index) => {
               const isLast = index === items.length - 1
               return (
-                <BreadcrumbItem key={item.href ?? item.label}>
-                  {item.href && !isLast ? (
-                    <Link
-                      href={item.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {item.label}
-                    </Link>
-                  ) : isLast ? (
-                    <BreadcrumbPage className="text-sm">{item.label}</BreadcrumbPage>
-                  ) : (
-                    <span className="text-sm text-muted-foreground">{item.label}</span>
-                  )}
+                <React.Fragment key={`${item.href ?? item.label}-${index}`}>
+                  <BreadcrumbItem>
+                    {item.href && !isLast ? (
+                      <Link
+                        href={item.href}
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    ) : isLast ? (
+                      <BreadcrumbPage className="text-sm">{item.label}</BreadcrumbPage>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">{item.label}</span>
+                    )}
+                  </BreadcrumbItem>
                   {!isLast && <BreadcrumbSeparator />}
-                </BreadcrumbItem>
+                </React.Fragment>
               )
             })}
           </BreadcrumbList>

@@ -20,7 +20,7 @@ export type CabinetForCard = Prisma.CabinetGetPayload<{
   }
 }>
 
-// CabinetForCard + lat/lon for distance computation in the SSG cabinet cache.
+// CabinetForCard + lat/lon + city.dptCode for in-memory geo computation in the SSG cabinet cache.
 export type CabinetSsgEntry = Prisma.CabinetGetPayload<{
   select: {
     placeId: true
@@ -35,7 +35,8 @@ export type CabinetSsgEntry = Prisma.CabinetGetPayload<{
     ratingCount: true
     description: true
     featured: true
-    city: { select: { key: true; name: true; zip: true } }
+    city: { select: { key: true; name: true; zip: true; dptCode: true } }
+    featureId: true
   }
 }>
 
