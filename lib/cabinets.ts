@@ -230,10 +230,17 @@ export async function getCabinetsProches(
 // IS_BUILD = NODE_ENV === 'production' is true both at build time and at SSR
 // runtime. Using the master cache here would return an empty array on /recherche
 // requests in production (cache is not populated at runtime). Always hits Prisma.
-export async function searchCabinets(query: string): Promise<CabinetForCard[]> {
-  const q = query.trim()
-  if (q.length < 2) return []
 
+export const SEARCH_PER_PAGE = 20
+
+export async function searchCabinets(
+  query: string,
+  page = 1,
+): Promise<{ results: CabinetForCard[]; hasMore: boolean }> {
+  const q = query.trim()
+  if (q.length < 2) return { results: [], hasMore: false }
+
+  // Fetch one extra row to cheaply detect a next page (no COUNT query needed).
   const rows = await prisma.cabinet.findMany({
     where: {
       isDeleted: false,
@@ -246,9 +253,15 @@ export async function searchCabinets(query: string): Promise<CabinetForCard[]> {
     },
     include: { city: true },
     orderBy: SORT,
-    take: 20,
+    skip: (page - 1) * SEARCH_PER_PAGE,
+    take: SEARCH_PER_PAGE + 1,
   })
-  return rows as unknown as CabinetForCard[]
+
+  const hasMore = rows.length > SEARCH_PER_PAGE
+  return {
+    results: rows.slice(0, SEARCH_PER_PAGE) as unknown as CabinetForCard[],
+    hasMore,
+  }
 }
 
 // ─── Taxonomy filter (SSG — uses master cache at build, targeted query in dev) ─

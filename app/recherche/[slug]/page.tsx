@@ -25,7 +25,7 @@ interface SpecialitePageProps {
 export async function generateMetadata({ params }: SpecialitePageProps): Promise<Metadata> {
   const { slug } = await params
   const entry = slugToTaxonomyEntry(slug)
-  if (!entry) return { robots: { index: false } }
+  if (!entry) notFound()
 
   const cabinets = await getCabinetsByTaxonomy(entry.type, entry.key)
   const title = buildSpecialiteTitle(entry.label, cabinets.length)

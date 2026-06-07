@@ -1,8 +1,12 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Container } from '@/components/ui/container'
 import { SearchBar } from '@/components/search/search-bar'
 import { CabinetGrid } from '@/components/listing/cabinet-grid'
-import { searchCabinets } from '@/lib/cabinets'
+import { searchCabinets, SEARCH_PER_PAGE } from '@/lib/cabinets'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = {
   title: 'Recherche de cabinets comptables',
@@ -10,14 +14,24 @@ export const metadata: Metadata = {
 }
 
 interface SearchPageProps {
-  searchParams: Promise<{ q?: string }>
+  searchParams: Promise<{ q?: string; page?: string }>
 }
 
 export default async function RecherchePage({ searchParams }: SearchPageProps) {
-  const { q } = await searchParams
+  const { q, page: pageParam } = await searchParams
   const query = (q ?? '').trim()
+  const page = Math.max(1, parseInt(pageParam ?? '1', 10) || 1)
   const hasQuery = query.length >= 2
-  const results = hasQuery ? await searchCabinets(query) : []
+
+  const { results, hasMore } = hasQuery
+    ? await searchCabinets(query, page)
+    : { results: [], hasMore: false }
+
+  const from = (page - 1) * SEARCH_PER_PAGE + 1
+  const to = from + results.length - 1
+
+  const pageUrl = (p: number) =>
+    `/recherche?q=${encodeURIComponent(query)}&page=${p}`
 
   return (
     <main id="main-content">
@@ -31,15 +45,47 @@ export default async function RecherchePage({ searchParams }: SearchPageProps) {
             {results.length > 0 ? (
               <>
                 <p className="text-sm text-muted-foreground mb-4">
-                  {results.length === 20
-                    ? `20 premiers résultats pour « ${query} »`
-                    : `${results.length} résultat${results.length > 1 ? 's' : ''} pour « ${query} »`}
+                  Résultats {from}–{to} pour «&nbsp;{query}&nbsp;»
+                  {!hasMore && page === 1 && ` (${results.length} au total)`}
                 </p>
+
                 <CabinetGrid cabinets={results} />
+
+                {/* Pagination */}
+                {(page > 1 || hasMore) && (
+                  <div className="flex items-center justify-between mt-10 pt-6 border-t border-border">
+                    {page > 1 ? (
+                      <Link
+                        href={pageUrl(page - 1)}
+                        className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}
+                      >
+                        <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                        Page précédente
+                      </Link>
+                    ) : (
+                      <div />
+                    )}
+
+                    <span className="text-sm text-muted-foreground">Page {page}</span>
+
+                    {hasMore ? (
+                      <Link
+                        href={pageUrl(page + 1)}
+                        className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}
+                      >
+                        Page suivante
+                        <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                      </Link>
+                    ) : (
+                      <div />
+                    )}
+                  </div>
+                )}
               </>
             ) : (
               <p className="text-muted-foreground mt-12 text-center">
-                Aucun cabinet trouvé pour «&nbsp;{query}&nbsp;». Essayez avec le nom de
+                Aucun cabinet trouvé pour «&nbsp;{query}&nbsp;»
+                {page > 1 ? ` à la page ${page}` : ''}. Essayez avec le nom de
                 la ville ou un code postal.
               </p>
             )}
