@@ -102,8 +102,27 @@ export async function getDeptsByRegion(regionCode: string): Promise<Department[]
   return all.filter((d) => d.regionCode === regionCode)
 }
 
+// All regions derived from master cabinet cache at build time — consistent with
+// getRegionBySlug so generateStaticParams and slug resolution use the same dataset.
+let _allRegionsPromise: Promise<Region[]> | null = null
+
+function getAllRegionsForSsg(): Promise<Region[]> {
+  if (!_allRegionsPromise) {
+    _allRegionsPromise = getAllCabinetsWithRelationsForSsg().then((cabinets) => {
+      const regionMap = new Map<string, Region>()
+      for (const c of cabinets) {
+        const r = c.city.department.region
+        if (!regionMap.has(r.code)) regionMap.set(r.code, r)
+      }
+      return Array.from(regionMap.values()).sort((a, b) => a.name.localeCompare(b.name, 'fr'))
+    })
+  }
+  return _allRegionsPromise
+}
+
 export async function getAllRegions(): Promise<Region[]> {
-  return prisma.region.findMany({ orderBy: { name: 'asc' } })
+  if (!IS_BUILD) return prisma.region.findMany({ orderBy: { name: 'asc' } })
+  return getAllRegionsForSsg()
 }
 
 export async function getAllDepts(): Promise<Department[]> {
@@ -335,7 +354,7 @@ export async function getTopCitiesByRegion(
       }
     }
     return [...byCity.values()]
-      .sort((a, b) => b.count - a.count)
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'fr'))
       .slice(0, limit)
       .map(({ key, name, zip, count }) => ({ key, name, zip, cabinetCount: count }))
   }
@@ -346,7 +365,9 @@ export async function getTopCitiesByRegion(
     const cities = await getCitiesByDeptWithCount(d.code)
     allCities.push(...cities)
   }
-  return allCities.sort((a, b) => b.cabinetCount - a.cabinetCount).slice(0, limit)
+  return allCities
+    .sort((a, b) => b.cabinetCount - a.cabinetCount || a.name.localeCompare(b.name, 'fr'))
+    .slice(0, limit)
 }
 
 // ─── Counts ───────────────────────────────────────────────────────
