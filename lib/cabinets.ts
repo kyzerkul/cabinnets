@@ -226,6 +226,57 @@ export async function getCabinetsProches(
     .slice(0, limit)
 }
 
+// ─── Runtime search (SSR only — no IS_BUILD, no master cache) ─────
+// IS_BUILD = NODE_ENV === 'production' is true both at build time and at SSR
+// runtime. Using the master cache here would return an empty array on /recherche
+// requests in production (cache is not populated at runtime). Always hits Prisma.
+export async function searchCabinets(query: string): Promise<CabinetForCard[]> {
+  const q = query.trim()
+  if (q.length < 2) return []
+
+  const rows = await prisma.cabinet.findMany({
+    where: {
+      isDeleted: false,
+      OR: [
+        { title: { contains: q, mode: 'insensitive' } },
+        { city: { name: { contains: q, mode: 'insensitive' } } },
+        { zip: { contains: q, mode: 'insensitive' } },
+        { street: { contains: q, mode: 'insensitive' } },
+      ],
+    },
+    include: { city: true },
+    orderBy: SORT,
+    take: 20,
+  })
+  return rows as unknown as CabinetForCard[]
+}
+
+// ─── Taxonomy filter (SSG — uses master cache at build, targeted query in dev) ─
+export async function getCabinetsByTaxonomy(
+  type: 'service' | 'secteur',
+  key: string,
+): Promise<CabinetForCard[]> {
+  if (!IS_BUILD) {
+    const where =
+      type === 'service'
+        ? { services: { has: key }, isDeleted: false }
+        : { secteurs: { has: key }, isDeleted: false }
+    const rows = await prisma.cabinet.findMany({
+      where,
+      include: { city: true },
+      orderBy: SORT,
+      take: 50,
+    })
+    return rows as unknown as CabinetForCard[]
+  }
+  const all = await getAllCabinetsWithRelationsForSsg()
+  // master cache already sorted by SORT — filter preserves order
+  const filtered = all.filter((c) =>
+    type === 'service' ? c.services.includes(key) : c.secteurs.includes(key),
+  )
+  return filtered.slice(0, 50) as unknown as CabinetForCard[]
+}
+
 export async function getPeopleAlsoSearchCabinets(
   cabinet: Pick<CabinetWithRelations, 'peopleAlsoSearch'>,
   limit = 5,

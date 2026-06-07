@@ -271,6 +271,17 @@ export function buildWebsiteJsonLd(): Record<string, unknown> {
   }
 }
 
+export function buildSpecialiteTitle(label: string, count: number): string {
+  return `Expert-comptable spécialisé ${label} en France : ${count} cabinets — Annuaire ${YEAR}`
+}
+
+export function buildSpecialiteDescription(label: string, count: number): string {
+  const n = count >= 50 ? '50+' : String(count)
+  return truncate(
+    `Trouvez un expert-comptable spécialisé ${label}. ${n} cabinet${count > 1 ? 's' : ''} référencé${count > 1 ? 's' : ''} en France. Comparez avis, horaires et contacts.`,
+  )
+}
+
 export function buildOrganizationJsonLd(): Record<string, unknown> {
   const base = siteUrl()
   const jsonLd: Record<string, unknown> = {

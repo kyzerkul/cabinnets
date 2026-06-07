@@ -11,6 +11,7 @@ export function GET() {
     'sitemap-arr.xml',
     'sitemap-depts.xml',
     'sitemap-regions.xml',
+    'sitemap-services.xml',
   ]
   const xml = xmlSitemapIndex(
     sitemaps.map((name) => xmlSitemapEntry(`${base}/${name}`, BUILD_DATE)),
