@@ -139,8 +139,8 @@ export function ListingFilters({ cabinets }: ListingFiltersProps) {
       {/* Compteur résultats */}
       <p className="text-sm text-muted-foreground mb-4">
         {displayed.length === cabinets.length
-          ? `${cabinets.length} cabinet${cabinets.length > 1 ? 's' : ''}`
-          : `${displayed.length} sur ${cabinets.length} cabinet${cabinets.length > 1 ? 's' : ''}`}
+          ? `${cabinets.length} cabinet${cabinets.length !== 1 ? 's' : ''}`
+          : `${displayed.length} sur ${cabinets.length} cabinet${cabinets.length !== 1 ? 's' : ''}`}
       </p>
 
       {/* Grille résultats */}
