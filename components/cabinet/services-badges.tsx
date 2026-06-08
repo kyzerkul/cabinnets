@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { SERVICES, SECTEURS } from '@/lib/taxonomies'
 
@@ -16,11 +17,19 @@ export function ServicesBadges({ services, secteurs, langues = [] }: ServicesBad
         <div>
           <h2 className="text-sm font-semibold mb-2">Services proposés</h2>
           <div className="flex flex-wrap gap-2">
-            {services.map((s) => (
-              <Badge key={s} variant="secondary" className="text-xs">
-                {SERVICES[s] ?? s}
-              </Badge>
-            ))}
+            {services.map((s) =>
+              s in SERVICES ? (
+                <Link key={s} href={`/recherche/expert-comptable-${s}`}>
+                  <Badge variant="secondary" className="text-xs cursor-pointer">
+                    {SERVICES[s]}
+                  </Badge>
+                </Link>
+              ) : (
+                <Badge key={s} variant="secondary" className="text-xs">
+                  {s}
+                </Badge>
+              ),
+            )}
           </div>
         </div>
       )}
@@ -29,11 +38,19 @@ export function ServicesBadges({ services, secteurs, langues = [] }: ServicesBad
         <div>
           <h2 className="text-sm font-semibold mb-2">Secteurs & clientèle</h2>
           <div className="flex flex-wrap gap-2">
-            {secteurs.map((s) => (
-              <Badge key={s} variant="outline" className="text-xs">
-                {SECTEURS[s] ?? s}
-              </Badge>
-            ))}
+            {secteurs.map((s) =>
+              s in SECTEURS ? (
+                <Link key={s} href={`/recherche/expert-comptable-${s}`}>
+                  <Badge variant="outline" className="text-xs cursor-pointer">
+                    {SECTEURS[s]}
+                  </Badge>
+                </Link>
+              ) : (
+                <Badge key={s} variant="outline" className="text-xs">
+                  {s}
+                </Badge>
+              ),
+            )}
           </div>
         </div>
       )}

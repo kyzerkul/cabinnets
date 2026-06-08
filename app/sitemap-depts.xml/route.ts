@@ -7,7 +7,7 @@ export const dynamic = 'force-static'
 export async function GET() {
   const codes = await getAllDeptCodes()
   const depts = await Promise.all(codes.map((c) => getDept(c)))
-  const entries = depts
+  const deptEntries = depts
     .filter((d): d is NonNullable<typeof d> => d !== null)
     .map((d) =>
       xmlUrlEntry(
@@ -16,7 +16,12 @@ export async function GET() {
         0.8,
       ),
     )
-  return new Response(xmlUrlset(entries), {
+  const indexEntry = xmlUrlEntry(
+    canonicalUrl('/cabinets-comptables/departements'),
+    BUILD_DATE,
+    0.7,
+  )
+  return new Response(xmlUrlset([indexEntry, ...deptEntries]), {
     headers: { 'Content-Type': 'application/xml' },
   })
 }

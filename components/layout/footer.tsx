@@ -21,6 +21,7 @@ const REGIONS = [
 
 const NAV_LINKS = [
   { label: 'Accueil', href: '/' },
+  { label: 'Tous les départements', href: '/cabinets-comptables/departements' },
   { label: 'Rechercher', href: '/recherche' },
   { label: 'Demander un devis', href: '/demander-un-devis' },
 ]
