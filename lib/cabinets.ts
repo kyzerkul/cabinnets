@@ -170,7 +170,9 @@ export async function countCabinetsByRegion(regionCode: string): Promise<number>
 }
 
 export async function getTotalCabinetCount(): Promise<number> {
-  return prisma.cabinet.count({ where: { isDeleted: false } })
+  if (!IS_BUILD) return prisma.cabinet.count({ where: { isDeleted: false } })
+  const all = await getAllCabinetsForSsg()
+  return all.length
 }
 
 // Thin wrapper so callers typed against CabinetSsgEntry continue to compile.

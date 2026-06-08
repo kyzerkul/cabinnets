@@ -32,12 +32,7 @@ export function DeptsByRegionGrid({ regions }: DeptsByRegionGridProps) {
             </Link>
           </h2>
           <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2" role="list">
-            {[...group.depts]
-              .sort(
-                (a, b) =>
-                  b.cabinetCount - a.cabinetCount || a.name.localeCompare(b.name, 'fr'),
-              )
-              .map((dept) => (
+            {group.depts.map((dept) => (
                 <li key={dept.code}>
                   <Link
                     href={`/cabinets-comptables/departement/${dept.slug}`}
@@ -51,7 +46,7 @@ export function DeptsByRegionGrid({ regions }: DeptsByRegionGridProps) {
                     </Badge>
                   </Link>
                 </li>
-              ))}
+            ))}
           </ul>
         </section>
       ))}

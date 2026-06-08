@@ -17,13 +17,19 @@ export function ServicesBadges({ services, secteurs, langues = [] }: ServicesBad
         <div>
           <h2 className="text-sm font-semibold mb-2">Services proposés</h2>
           <div className="flex flex-wrap gap-2">
-            {services.map((s) => (
-              <Link key={s} href={`/recherche/expert-comptable-${s}`}>
-                <Badge variant="secondary" className="text-xs cursor-pointer">
-                  {SERVICES[s] ?? s}
+            {services.map((s) =>
+              s in SERVICES ? (
+                <Link key={s} href={`/recherche/expert-comptable-${s}`}>
+                  <Badge variant="secondary" className="text-xs cursor-pointer">
+                    {SERVICES[s]}
+                  </Badge>
+                </Link>
+              ) : (
+                <Badge key={s} variant="secondary" className="text-xs">
+                  {s}
                 </Badge>
-              </Link>
-            ))}
+              ),
+            )}
           </div>
         </div>
       )}
@@ -32,13 +38,19 @@ export function ServicesBadges({ services, secteurs, langues = [] }: ServicesBad
         <div>
           <h2 className="text-sm font-semibold mb-2">Secteurs & clientèle</h2>
           <div className="flex flex-wrap gap-2">
-            {secteurs.map((s) => (
-              <Link key={s} href={`/recherche/expert-comptable-${s}`}>
-                <Badge variant="outline" className="text-xs cursor-pointer">
-                  {SECTEURS[s] ?? s}
+            {secteurs.map((s) =>
+              s in SECTEURS ? (
+                <Link key={s} href={`/recherche/expert-comptable-${s}`}>
+                  <Badge variant="outline" className="text-xs cursor-pointer">
+                    {SECTEURS[s]}
+                  </Badge>
+                </Link>
+              ) : (
+                <Badge key={s} variant="outline" className="text-xs">
+                  {s}
                 </Badge>
-              </Link>
-            ))}
+              ),
+            )}
           </div>
         </div>
       )}
