@@ -14,7 +14,7 @@ import { Container } from '@/components/ui/container'
 import { Section } from '@/components/ui/section'
 import { Badge } from '@/components/ui/badge'
 import { SiteBreadcrumb } from '@/components/layout/breadcrumb'
-import { CabinetGrid } from '@/components/listing/cabinet-grid'
+import { ListingFilters } from '@/components/listing/listing-filters'
 import { DeptCitiesGrid } from '@/components/listing/dept-cities-grid'
 import { JsonLd } from '@/components/seo/json-ld'
 
@@ -106,12 +106,9 @@ export default async function DeptPage({ params }: Props) {
 
         <Section>
           <h2 className="text-xl font-semibold mb-6">
-            Cabinets comptables — {dept.name}{' '}
-            <span className="text-muted-foreground font-normal text-base">
-              ({cabinets.length} résultat{cabinets.length !== 1 ? 's' : ''})
-            </span>
+            Cabinets comptables — {dept.name}
           </h2>
-          <CabinetGrid cabinets={cabinets} />
+          <ListingFilters cabinets={cabinets} />
         </Section>
 
         <Section>

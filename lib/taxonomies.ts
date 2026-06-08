@@ -40,3 +40,28 @@ export const SECTEURS: Record<string, string> = {
   particuliers: 'Particuliers',
   'international-export': 'International',
 }
+
+// ─── Specialité pages helpers ─────────────────────────────────────
+
+export type TaxonomyEntry = {
+  key: string
+  label: string
+  type: 'service' | 'secteur'
+}
+
+export function slugToTaxonomyEntry(slug: string): TaxonomyEntry | null {
+  const key = slug.replace(/^expert-comptable-/, '')
+  if (SERVICES[key]) return { key, label: SERVICES[key], type: 'service' }
+  if (SECTEURS[key]) return { key, label: SECTEURS[key], type: 'secteur' }
+  return null
+}
+
+export function getAllSpecialiteParams(): { slug: string }[] {
+  const serviceParams = Object.keys(SERVICES).map((key) => ({
+    slug: `expert-comptable-${key}`,
+  }))
+  const secteurParams = Object.keys(SECTEURS).map((key) => ({
+    slug: `expert-comptable-${key}`,
+  }))
+  return [...serviceParams, ...secteurParams]
+}

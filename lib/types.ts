@@ -16,6 +16,7 @@ export type CabinetForCard = Prisma.CabinetGetPayload<{
     ratingCount: true
     description: true
     featured: true
+    services: true
     city: { select: { key: true; name: true; zip: true } }
   }
 }>
@@ -35,6 +36,7 @@ export type CabinetSsgEntry = Prisma.CabinetGetPayload<{
     ratingCount: true
     description: true
     featured: true
+    services: true
     city: { select: { key: true; name: true; zip: true; dptCode: true } }
     featureId: true
   }

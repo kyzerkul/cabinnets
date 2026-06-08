@@ -20,7 +20,7 @@ import { Section } from '@/components/ui/section'
 import { Badge } from '@/components/ui/badge'
 import { SiteBreadcrumb } from '@/components/layout/breadcrumb'
 import { RegionDeptsGrid } from '@/components/listing/region-depts-grid'
-import { ExpandableCabinetGrid } from '@/components/listing/expandable-cabinet-grid'
+import { ListingFilters } from '@/components/listing/listing-filters'
 import { JsonLd } from '@/components/seo/json-ld'
 
 export const dynamicParams = false
@@ -105,9 +105,9 @@ export default async function RegionPage({ params }: Props) {
 
         <Section>
           <h2 className="text-xl font-semibold mb-6">
-            Cabinets les mieux notés en {region.name}
+            Cabinets comptables en {region.name}
           </h2>
-          <ExpandableCabinetGrid cabinets={cabinets} initialCount={12} />
+          <ListingFilters cabinets={cabinets} />
         </Section>
 
         <Section>
