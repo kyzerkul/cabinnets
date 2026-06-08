@@ -12,11 +12,16 @@ export function QuoteRequestForm() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    if (isPending) return
     setServerError(null)
     const formData = new FormData(e.currentTarget)
     startTransition(async () => {
-      const result = await submitLead(formData)
-      if (!result.ok) setServerError(result.error)
+      try {
+        const result = await submitLead(formData)
+        if (!result.ok) setServerError(result.error)
+      } catch {
+        setServerError('Une erreur est survenue. Veuillez réessayer.')
+      }
     })
   }
 

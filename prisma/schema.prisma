@@ -136,6 +136,7 @@ model Lead {
   cabinetId String?
   cabinet   Cabinet? @relation(fields: [cabinetId], references: [placeId])
 
+  @@index([cabinetId])
   @@map("leads")
 }
 
