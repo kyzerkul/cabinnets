@@ -33,6 +33,7 @@ import { ArrondissementsGrid } from '@/components/listing/arrondissements-grid'
 import { ListingHeader } from '@/components/listing/listing-header'
 import { ThinListingHeader } from '@/components/listing/thin-listing-header'
 import { CabinetGrid } from '@/components/listing/cabinet-grid'
+import { ListingFilters } from '@/components/listing/listing-filters'
 import { VillesDuDept } from '@/components/listing/villes-du-dept'
 import { VillesVoisines } from '@/components/listing/villes-voisines'
 
@@ -177,7 +178,7 @@ export default async function VillePage({ params }: Props) {
 
         <Section>
           <Container size="wide">
-            <CabinetGrid cabinets={cabinets} />
+            <ListingFilters cabinets={cabinets} />
           </Container>
         </Section>
 
@@ -351,7 +352,7 @@ export default async function VillePage({ params }: Props) {
 
       <Section>
         <Container size="wide">
-          <CabinetGrid cabinets={cabinets} />
+          <ListingFilters cabinets={cabinets} />
         </Container>
       </Section>
 
