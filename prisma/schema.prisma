@@ -111,8 +111,36 @@ model Cabinet {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
+  leads Lead[]
+
   @@index([cityKey])
   @@index([featured])
   @@index([siren])
   @@index([isDeleted])
+}
+
+// ─── Monetization — phase 2 activation ───────────────────────────
+
+model Lead {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  status    LeadStatus @default(PENDING)
+
+  name    String
+  email   String
+  phone   String?
+  city    String?
+  message String  @db.Text
+
+  // Phase 2: matched to a specific cabinet
+  cabinetId String?
+  cabinet   Cabinet? @relation(fields: [cabinetId], references: [placeId])
+
+  @@map("leads")
+}
+
+enum LeadStatus {
+  PENDING
+  SENT
+  ARCHIVED
 }
