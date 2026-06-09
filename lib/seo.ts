@@ -169,6 +169,7 @@ export function buildFicheJsonLd(cabinet: CabinetWithRelations): Record<string, 
   const base: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'AccountingService',
+    '@id': canonical,
     name: cabinet.title,
     description: cabinet.description,
     address: {
