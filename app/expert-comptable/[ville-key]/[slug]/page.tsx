@@ -27,6 +27,7 @@ import { MapEmbed } from '@/components/cabinet/map-embed'
 import { CabinetCard } from '@/components/cabinet/cabinet-card'
 import { RequestQuoteSlot } from '@/components/monetization/request-quote-slot'
 import { ClaimCta } from '@/components/monetization/claim-cta'
+import { AdSlot } from '@/components/monetization/ad-slot'
 
 type Props = {
   params: Promise<{ 'ville-key': string; slug: string }>
@@ -195,6 +196,7 @@ export default async function FicheCabinetPage({ params }: Props) {
             <div className="space-y-4">
               <ContactBlock cabinet={cabinet} />
               <ClaimCta cabinetName={cabinet.title} />
+              <AdSlot placement="sidebar-fiche" />
             </div>
           </div>
         </Container>

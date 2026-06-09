@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: ['/', '/recherche/expert-comptable-'],
-      disallow: ['/api/', '/recherche', '/supprimer-ma-fiche'],
+      disallow: ['/api/', '/recherche', '/supprimer-ma-fiche', '/revendiquer-ma-fiche'],
     },
     sitemap: `${siteUrl()}/sitemap.xml`,
   }
