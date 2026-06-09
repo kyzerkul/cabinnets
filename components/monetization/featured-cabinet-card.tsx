@@ -49,10 +49,10 @@ export function FeaturedCabinetCard({ cabinet }: FeaturedCabinetCardProps) {
           <span>{ville}</span>
         </div>
 
-        {cabinet.ratingValue && cabinet.ratingCount && cabinet.ratingCount > 0 && (
+        {cabinet.ratingCount != null && cabinet.ratingCount > 0 && (
           <div className="flex items-center gap-1 mt-1 text-xs">
             <Star className="h-3 w-3 fill-amber-400 text-amber-400" aria-hidden="true" />
-            <span className="font-medium">{cabinet.ratingValue.toFixed(1)}</span>
+            <span className="font-medium">{(cabinet.ratingValue ?? 0).toFixed(1)}</span>
             <span className="text-muted-foreground">({cabinet.ratingCount} avis)</span>
           </div>
         )}
