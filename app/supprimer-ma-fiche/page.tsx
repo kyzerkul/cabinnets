@@ -6,7 +6,7 @@ import { SiteBreadcrumb } from '@/components/layout/breadcrumb'
 import { JsonLd } from '@/components/seo/json-ld'
 import { RemovalRequestForm } from '@/components/legal/removal-request-form'
 
-export async function generateMetadata(): Promise<Metadata> {
+export function generateMetadata(): Metadata {
   return {
     title: 'Supprimer ma fiche — Demande RGPD',
     robots: { index: false, follow: false },

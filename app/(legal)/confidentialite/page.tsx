@@ -6,7 +6,7 @@ import { Section } from '@/components/ui/section'
 import { SiteBreadcrumb } from '@/components/layout/breadcrumb'
 import { JsonLd } from '@/components/seo/json-ld'
 
-export async function generateMetadata(): Promise<Metadata> {
+export function generateMetadata(): Metadata {
   return {
     title: 'Politique de confidentialité',
     robots: { index: false, follow: false },

@@ -6,7 +6,7 @@ import { Section } from '@/components/ui/section'
 import { SiteBreadcrumb } from '@/components/layout/breadcrumb'
 import { JsonLd } from '@/components/seo/json-ld'
 
-export async function generateMetadata(): Promise<Metadata> {
+export function generateMetadata(): Metadata {
   return {
     title: 'Mentions légales',
     robots: { index: false, follow: false },
@@ -47,12 +47,12 @@ export default function MentionsLegalesPage() {
               <h2 className="text-lg font-semibold text-foreground mb-3">Éditeur du site</h2>
               <p className="text-muted-foreground">
                 Ce site est édité par un particulier dans le cadre d&apos;un projet personnel.
-                Pour toute question, utilisez notre{' '}
+                Pour toute demande de suppression de fiche, utilisez notre{' '}
                 <Link
                   href="/supprimer-ma-fiche"
                   className="text-primary underline-offset-4 hover:underline"
                 >
-                  formulaire de contact
+                  formulaire de suppression
                 </Link>
                 .
               </p>

@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db'
 
 const schema = z.object({
   name: z.string().min(2).max(100),
-  email: z.string().email(),
+  email: z.email(),
   cabinetName: z.string().min(2).max(200),
   address: z.string().max(300).optional(),
   reason: z.string().min(10).max(2000),
