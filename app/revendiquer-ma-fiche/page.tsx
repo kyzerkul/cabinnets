@@ -1,16 +1,17 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { Container } from '@/components/ui/container'
 import { Section } from '@/components/ui/section'
 import { SiteBreadcrumb } from '@/components/layout/breadcrumb'
-import { siteUrl } from '@/lib/seo'
+import { canonicalUrl } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Revendiquer ma fiche cabinet',
-  robots: { index: false, follow: false },
-  alternates: {
-    canonical: `${siteUrl()}/revendiquer-ma-fiche`,
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Revendiquer ma fiche cabinet',
+    robots: { index: false, follow: false },
+    alternates: {
+      canonical: canonicalUrl('/revendiquer-ma-fiche'),
+    },
+  }
 }
 
 export default function RevendiquerMaFichePage() {
@@ -41,14 +42,8 @@ export default function RevendiquerMaFichePage() {
           <div>
             <h2 className="text-lg font-semibold text-foreground mb-2">En attendant</h2>
             <p>
-              Pour toute demande de modification ou de suppression de votre fiche, utilisez notre{' '}
-              <Link
-                href="/supprimer-ma-fiche"
-                className="text-primary underline-offset-4 hover:underline"
-              >
-                formulaire de suppression de fiche
-              </Link>
-              .
+              Pour toute demande de modification ou de suppression de votre fiche, un formulaire
+              dédié sera prochainement disponible sur ce site.
             </p>
           </div>
         </div>

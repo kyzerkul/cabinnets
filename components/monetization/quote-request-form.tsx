@@ -9,6 +9,7 @@ import { submitLead } from '@/app/actions/submit-lead'
 export function QuoteRequestForm() {
   const [isPending, startTransition] = useTransition()
   const [serverError, setServerError] = useState<string | null>(null)
+  const [submitted, setSubmitted] = useState(false)
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -18,11 +19,27 @@ export function QuoteRequestForm() {
     startTransition(async () => {
       try {
         const result = await submitLead(formData)
-        if (!result.ok) setServerError(result.error)
+        if (result.ok) {
+          setSubmitted(true)
+        } else {
+          setServerError(result.error)
+        }
       } catch {
         setServerError('Une erreur est survenue. Veuillez réessayer.')
       }
     })
+  }
+
+  if (submitted) {
+    return (
+      <div className="rounded-md border bg-secondary/50 p-6 space-y-2 text-sm">
+        <p className="font-semibold text-foreground">Demande envoyée</p>
+        <p className="text-muted-foreground">
+          Nous vous mettrons en relation avec des experts-comptables qualifiés dans les plus brefs
+          délais.
+        </p>
+      </div>
+    )
   }
 
   return (
