@@ -145,3 +145,25 @@ enum LeadStatus {
   SENT
   ARCHIVED
 }
+
+// ─── RGPD — suppression fiche ─────────────────────────────────────
+
+model RemovalRequest {
+  id          String        @id @default(cuid())
+  createdAt   DateTime      @default(now())
+  status      RemovalStatus @default(PENDING)
+
+  name        String
+  email       String
+  cabinetName String
+  address     String?
+  reason      String        @db.Text
+
+  @@map("removal_requests")
+}
+
+enum RemovalStatus {
+  PENDING
+  PROCESSED
+  REJECTED
+}
