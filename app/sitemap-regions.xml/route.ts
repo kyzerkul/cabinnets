@@ -7,9 +7,6 @@ export const dynamic = 'force-static'
 const STATIC_PAGES: { path: string; priority: number }[] = [
   { path: '/', priority: 1.0 },
   { path: '/demander-un-devis', priority: 0.5 },
-  { path: '/mentions-legales', priority: 0.3 },
-  { path: '/confidentialite', priority: 0.3 },
-  { path: '/cgu', priority: 0.3 },
 ]
 
 export async function GET() {

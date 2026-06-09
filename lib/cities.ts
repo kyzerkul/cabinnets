@@ -178,9 +178,8 @@ export async function getAllNormalCityKeys(): Promise<string[]> {
   return rows.filter((r) => r._count.cabinets >= 3).map((r) => r.key)
 }
 
-// Promise-keyed cache per deptCode: 982 ville-page calls collapse to ≤95 DB
-// queries per worker (one per unique dept). Safe because cabinet data is
-// stable within a single SSG build run.
+// At build time: derived from master cabinet cache — 0 extra DB queries.
+// In dev: Promise-keyed cache, ≤95 DB queries per worker (one per unique dept).
 const _citiesByDeptCache = new Map<
   string,
   Promise<{ key: string; name: string; zip: string; cabinetCount: number }[]>
@@ -189,6 +188,30 @@ const _citiesByDeptCache = new Map<
 export function getCitiesByDeptWithCount(
   dptCode: string,
 ): Promise<{ key: string; name: string; zip: string; cabinetCount: number }[]> {
+  if (IS_BUILD) {
+    if (!_citiesByDeptCache.has(dptCode)) {
+      _citiesByDeptCache.set(
+        dptCode,
+        getAllCabinetsWithRelationsForSsg().then((cabinets) => {
+          const cityMap = new Map<string, { key: string; name: string; zip: string; count: number }>()
+          for (const c of cabinets) {
+            if (c.city.dptCode !== dptCode) continue
+            const entry = cityMap.get(c.cityKey)
+            if (entry) {
+              entry.count++
+            } else {
+              cityMap.set(c.cityKey, { key: c.cityKey, name: c.city.name, zip: c.city.zip, count: 1 })
+            }
+          }
+          return [...cityMap.values()]
+            .sort((a, b) => a.name.localeCompare(b.name, 'fr'))
+            .map(({ key, name, zip, count }) => ({ key, name, zip, cabinetCount: count }))
+        }),
+      )
+    }
+    return _citiesByDeptCache.get(dptCode)!
+  }
+
   if (!_citiesByDeptCache.has(dptCode)) {
     _citiesByDeptCache.set(
       dptCode,

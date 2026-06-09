@@ -9,9 +9,9 @@ const nextConfig: NextConfig = {
   // Neon free tier: give each worker up to 5 min for the initial cache warmup.
   staticPageGenerationTimeout: 300,
   experimental: {
-    // 2 workers → 2 concurrent large DB queries instead of 7.
-    // Each worker loads all cabinets once, then serves 1500+ pages from memory.
-    cpus: 2,
+    // 1 worker → single connection to Neon free tier at build time.
+    // Increase back to 2 once on a paid Neon plan or a more stable DB host.
+    cpus: 1,
   },
 }
 
