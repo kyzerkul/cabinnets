@@ -20,6 +20,7 @@ import { Section } from '@/components/ui/section'
 import { SiteBreadcrumb } from '@/components/layout/breadcrumb'
 import { JsonLd } from '@/components/seo/json-ld'
 import { FicheHero } from '@/components/cabinet/fiche-hero'
+import { FicheMainImage } from '@/components/cabinet/fiche-main-image'
 import { ContactBlock } from '@/components/cabinet/contact-block'
 import { OpeningHours } from '@/components/cabinet/opening-hours'
 import { ServicesBadges } from '@/components/cabinet/services-badges'
@@ -126,6 +127,13 @@ export default async function FicheCabinetPage({ params }: Props) {
 
       <SiteBreadcrumb items={breadcrumbItems} />
       <FicheHero cabinet={cabinet} />
+
+      {cabinet.imageMainPath && cabinet.imageMainQuality === 'ok' && (
+        <FicheMainImage
+          src={cabinet.imageMainPath}
+          alt={`${cabinet.title} — cabinet comptable à ${ville}`}
+        />
+      )}
 
       <Section>
         <Container size="wide">
