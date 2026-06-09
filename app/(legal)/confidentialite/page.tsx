@@ -77,8 +77,8 @@ export default function ConfidentialitePage() {
                 >
                   formulaire de suppression de fiche
                 </Link>
-                , nous collectons : votre nom, votre adresse email, le nom du cabinet concerné et
-                votre message. Ces données sont utilisées uniquement pour traiter votre demande et
+                , nous collectons : votre nom, votre adresse email, le nom du cabinet concerné,
+                l&apos;adresse du cabinet (optionnel) et le motif de votre demande. Ces données sont utilisées uniquement pour traiter votre demande et
                 sont supprimées après traitement (sous 30 jours).
               </p>
             </div>

@@ -31,7 +31,8 @@ export async function submitRemovalRequest(
   try {
     await prisma.removalRequest.create({ data: parsed.data })
     return { ok: true }
-  } catch {
+  } catch (error) {
+    console.error('[submitRemovalRequest] Database error:', error)
     return { ok: false, error: 'Une erreur est survenue. Veuillez réessayer.' }
   }
 }

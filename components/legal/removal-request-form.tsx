@@ -41,6 +41,8 @@ export function RemovalRequestForm() {
           name="name"
           type="text"
           required
+          minLength={2}
+          maxLength={100}
           aria-required="true"
           disabled={pending}
         />
@@ -69,6 +71,8 @@ export function RemovalRequestForm() {
           name="cabinetName"
           type="text"
           required
+          minLength={2}
+          maxLength={200}
           aria-required="true"
           disabled={pending}
         />
@@ -76,7 +80,7 @@ export function RemovalRequestForm() {
 
       <div className="space-y-1.5">
         <Label htmlFor="address">Adresse du cabinet (optionnel)</Label>
-        <Input id="address" name="address" type="text" disabled={pending} />
+        <Input id="address" name="address" type="text" maxLength={300} disabled={pending} />
       </div>
 
       <div className="space-y-1.5">
@@ -90,6 +94,8 @@ export function RemovalRequestForm() {
           aria-required="true"
           disabled={pending}
           rows={5}
+          minLength={10}
+          maxLength={2000}
           placeholder="Ex : Je suis l'expert-comptable de ce cabinet et souhaite retirer mes informations."
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-y"
         />
