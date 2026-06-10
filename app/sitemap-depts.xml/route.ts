@@ -8,7 +8,7 @@ export async function GET() {
   const codes = await getAllDeptCodes()
   const depts = await Promise.all(codes.map((c) => getDept(c)))
   const deptEntries = depts
-    .filter((d): d is NonNullable<typeof d> => d !== null)
+    .filter((d): d is NonNullable<(typeof depts)[number]> => d !== null)
     .map((d) =>
       xmlUrlEntry(
         canonicalUrl(`/cabinets-comptables/departement/${d.slug}`),
