@@ -31,7 +31,7 @@ export function getAllCabinetsWithRelationsForSsg(): Promise<CabinetWithRelation
       orderBy: SORT,
     })
   }
-  return _allWithRelationsPromise
+  return _allWithRelationsPromise!
 }
 
 // ─── Single cabinet ───────────────────────────────────────────────

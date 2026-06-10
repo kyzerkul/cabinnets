@@ -31,7 +31,7 @@ function getAllCitiesWithDeptForSsg(): Promise<Map<string, CityWithDept>> {
       return map
     })
   }
-  return _citiesWithDeptPromise
+  return _citiesWithDeptPromise!
 }
 
 // ─── Single lookups ───────────────────────────────────────────────
@@ -91,7 +91,7 @@ function getAllDeptsForSsg(): Promise<DeptWithRegion[]> {
       return Array.from(deptMap.values()).sort((a, b) => a.name.localeCompare(b.name, 'fr'))
     })
   }
-  return _allDeptsPromise
+  return _allDeptsPromise!
 }
 
 export async function getDeptsByRegion(regionCode: string): Promise<Department[]> {
@@ -117,7 +117,7 @@ function getAllRegionsForSsg(): Promise<Region[]> {
       return Array.from(regionMap.values()).sort((a, b) => a.name.localeCompare(b.name, 'fr'))
     })
   }
-  return _allRegionsPromise
+  return _allRegionsPromise!
 }
 
 export async function getAllRegions(): Promise<Region[]> {
