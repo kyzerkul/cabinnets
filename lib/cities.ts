@@ -133,22 +133,38 @@ export async function getAllDepts(): Promise<Department[]> {
 // ─── generateStaticParams data ────────────────────────────────────
 
 export async function getAllCityKeys(): Promise<string[]> {
+  if (IS_BUILD) {
+    const cabinets = await getAllCabinetsWithRelationsForSsg()
+    return [...new Set(cabinets.map((c) => c.cityKey))]
+  }
   const rows = await prisma.city.findMany({ select: { key: true } })
   return rows.map((r) => r.key)
 }
 
 export async function getAllDeptCodes(): Promise<string[]> {
+  if (IS_BUILD) {
+    const cabinets = await getAllCabinetsWithRelationsForSsg()
+    return [...new Set(cabinets.map((c) => c.city.department.code))]
+  }
   const rows = await prisma.department.findMany({ select: { code: true } })
   return rows.map((r) => r.code)
 }
 
 export async function getAllRegionCodes(): Promise<string[]> {
+  if (IS_BUILD) {
+    const cabinets = await getAllCabinetsWithRelationsForSsg()
+    return [...new Set(cabinets.map((c) => c.city.department.region.code))]
+  }
   const rows = await prisma.region.findMany({ select: { code: true } })
   return rows.map((r) => r.code)
 }
 
 // Paris arrondissement keys only: "paris-75001" … "paris-75020".
 export async function getAllParisArrKeys(): Promise<string[]> {
+  if (IS_BUILD) {
+    const cabinets = await getAllCabinetsWithRelationsForSsg()
+    return [...new Set(cabinets.filter((c) => /^paris-750\d{2}$/.test(c.cityKey)).map((c) => c.cityKey))]
+  }
   const rows = await prisma.city.findMany({
     where: { key: { startsWith: 'paris-750' } },
     select: { key: true },
