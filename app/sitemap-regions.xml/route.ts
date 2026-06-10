@@ -1,6 +1,7 @@
 import { getAllRegionCodes, getRegion } from '@/lib/cities'
 import { canonicalUrl } from '@/lib/seo'
 import { BUILD_DATE, xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
+import type { Region } from '@/lib/types'
 
 export const dynamic = 'force-static'
 
@@ -11,10 +12,10 @@ const STATIC_PAGES: { path: string; priority: number }[] = [
 
 export async function GET() {
   const codes = await getAllRegionCodes()
-  const regions = await Promise.all(codes.map((c) => getRegion(c)))
+  const regions: (Region | null)[] = await Promise.all(codes.map((c) => getRegion(c)))
 
   const regionEntries = regions
-    .filter((r): r is NonNullable<Awaited<ReturnType<typeof getRegion>>> => r !== null)
+    .filter((r): r is Region => r !== null)
     .map((r) =>
       xmlUrlEntry(
         canonicalUrl(`/cabinets-comptables/region/${r.slug}`),
