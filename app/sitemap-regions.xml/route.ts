@@ -14,7 +14,7 @@ export async function GET() {
   const regions = await Promise.all(codes.map((c) => getRegion(c)))
 
   const regionEntries = regions
-    .filter((r): r is NonNullable<typeof r> => r !== null)
+    .filter((r): r is NonNullable<Awaited<ReturnType<typeof getRegion>>> => r !== null)
     .map((r) =>
       xmlUrlEntry(
         canonicalUrl(`/cabinets-comptables/region/${r.slug}`),
