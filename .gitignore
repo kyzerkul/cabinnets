@@ -34,8 +34,6 @@ yarn-error.log*
 .env*
 !.env.example
 
-# cabinet images (build-generated, gitignored per AD-10)
-/public/cabinets/
 
 # vercel
 .vercel
