@@ -1,0 +1,130 @@
+# Cabinets Comptables FR
+
+> Annuaire national des cabinets d'experts-comptables en France — trouvez, comparez et contactez un expert-comptable près de chez vous.
+
+Cabinets Comptables FR est l'annuaire de référence des cabinets d'experts-comptables en France. Il recense près de 2 000 cabinets répartis dans plus de 90 départements et 13 régions. Chaque fiche détaille les coordonnées, horaires, services proposés, secteurs d'activité, notes et avis clients, ainsi que les informations légales (SIREN, forme juridique, date de création).
+
+## Pages principales
+
+- [Accueil](https://cabinetscomptables.online/): Moteur de recherche et présentation de l'annuaire national
+- [Tous les départements](https://cabinetscomptables.online/cabinets-comptables/departements): Index de tous les départements couverts
+- [Demander un devis](https://cabinetscomptables.online/demander-un-devis): Formulaire de mise en relation avec un expert-comptable
+
+## Recherche par spécialité ou secteur
+
+- [Expert-comptable spécialisé comptabilité](https://cabinetscomptables.online/recherche/expert-comptable-comptabilite)
+- [Expert-comptable spécialisé fiscalité](https://cabinetscomptables.online/recherche/expert-comptable-fiscalite)
+- [Expert-comptable spécialisé paie & social](https://cabinetscomptables.online/recherche/expert-comptable-paie-social)
+- [Expert-comptable spécialisé juridique](https://cabinetscomptables.online/recherche/expert-comptable-juridique)
+- [Expert-comptable spécialisé audit / CAC](https://cabinetscomptables.online/recherche/expert-comptable-audit-cac)
+- [Expert-comptable en conseil en gestion](https://cabinetscomptables.online/recherche/expert-comptable-conseil-gestion)
+- [Expert-comptable en gestion de patrimoine](https://cabinetscomptables.online/recherche/expert-comptable-gestion-patrimoine)
+- [Expert-comptable création d'entreprise](https://cabinetscomptables.online/recherche/expert-comptable-creation-entreprise)
+- [Expert-comptable en conseil stratégique](https://cabinetscomptables.online/recherche/expert-comptable-conseil-strategique)
+- [Expert-comptable digitalisation](https://cabinetscomptables.online/recherche/expert-comptable-digitalisation)
+- [Expert-comptable international](https://cabinetscomptables.online/recherche/expert-comptable-international)
+- [Expert-comptable transmission d'entreprise](https://cabinetscomptables.online/recherche/expert-comptable-transmission-entreprise)
+- [Expert-comptable prévisionnel / business plan](https://cabinetscomptables.online/recherche/expert-comptable-previsionnel-business-plan)
+- [Expert-comptable formation](https://cabinetscomptables.online/recherche/expert-comptable-formation)
+- [Expert-comptable recouvrement](https://cabinetscomptables.online/recherche/expert-comptable-recouvrement)
+- [Expert-comptable BTP](https://cabinetscomptables.online/recherche/expert-comptable-btp)
+- [Expert-comptable médical / santé](https://cabinetscomptables.online/recherche/expert-comptable-medical-sante)
+- [Expert-comptable juridique / avocats](https://cabinetscomptables.online/recherche/expert-comptable-juridique-avocats)
+- [Expert-comptable e-commerce / numérique](https://cabinetscomptables.online/recherche/expert-comptable-ecommerce-numerique)
+- [Expert-comptable restauration / CHR](https://cabinetscomptables.online/recherche/expert-comptable-restauration-chr)
+- [Expert-comptable immobilier / SCI](https://cabinetscomptables.online/recherche/expert-comptable-immobilier-sci)
+- [Expert-comptable agricole](https://cabinetscomptables.online/recherche/expert-comptable-agricole)
+- [Expert-comptable associatif](https://cabinetscomptables.online/recherche/expert-comptable-associatif)
+- [Expert-comptable artisanat](https://cabinetscomptables.online/recherche/expert-comptable-artisanat)
+- [Expert-comptable industrie](https://cabinetscomptables.online/recherche/expert-comptable-industrie)
+- [Expert-comptable commerce](https://cabinetscomptables.online/recherche/expert-comptable-commerce-distribution)
+- [Expert-comptable transport](https://cabinetscomptables.online/recherche/expert-comptable-transport-logistique)
+- [Expert-comptable TPE](https://cabinetscomptables.online/recherche/expert-comptable-tpe)
+- [Expert-comptable PME](https://cabinetscomptables.online/recherche/expert-comptable-pme)
+- [Expert-comptable ETI / grands groupes](https://cabinetscomptables.online/recherche/expert-comptable-eti-grand-groupe)
+- [Expert-comptable start-up](https://cabinetscomptables.online/recherche/expert-comptable-start-up)
+- [Expert-comptable freelances](https://cabinetscomptables.online/recherche/expert-comptable-freelance-independant)
+- [Expert-comptable auto-entrepreneurs](https://cabinetscomptables.online/recherche/expert-comptable-auto-entrepreneur)
+- [Expert-comptable professions libérales](https://cabinetscomptables.online/recherche/expert-comptable-professions-liberales)
+- [Expert-comptable holdings](https://cabinetscomptables.online/recherche/expert-comptable-holding-patrimoine)
+- [Expert-comptable particuliers](https://cabinetscomptables.online/recherche/expert-comptable-particuliers)
+- [Expert-comptable international / export](https://cabinetscomptables.online/recherche/expert-comptable-international-export)
+
+## Annuaire par région
+
+- [Cabinets comptables en Auvergne-Rhône-Alpes](https://cabinetscomptables.online/cabinets-comptables/region/auvergne-rhone-alpes)
+- [Cabinets comptables en Bourgogne-Franche-Comté](https://cabinetscomptables.online/cabinets-comptables/region/bourgogne-franche-comte)
+- [Cabinets comptables en Bretagne](https://cabinetscomptables.online/cabinets-comptables/region/bretagne)
+- [Cabinets comptables en Centre-Val de Loire](https://cabinetscomptables.online/cabinets-comptables/region/centre-val-de-loire)
+- [Cabinets comptables en Corse](https://cabinetscomptables.online/cabinets-comptables/region/corse)
+- [Cabinets comptables en Grand Est](https://cabinetscomptables.online/cabinets-comptables/region/grand-est)
+- [Cabinets comptables en Hauts-de-France](https://cabinetscomptables.online/cabinets-comptables/region/hauts-de-france)
+- [Cabinets comptables en Île-de-France](https://cabinetscomptables.online/cabinets-comptables/region/ile-de-france)
+- [Cabinets comptables en Normandie](https://cabinetscomptables.online/cabinets-comptables/region/normandie)
+- [Cabinets comptables en Nouvelle-Aquitaine](https://cabinetscomptables.online/cabinets-comptables/region/nouvelle-aquitaine)
+- [Cabinets comptables en Occitanie](https://cabinetscomptables.online/cabinets-comptables/region/occitanie)
+- [Cabinets comptables en Pays de la Loire](https://cabinetscomptables.online/cabinets-comptables/region/pays-de-la-loire)
+- [Cabinets comptables en Provence-Alpes-Côte d'Azur](https://cabinetscomptables.online/cabinets-comptables/region/provence-alpes-cote-d-azur)
+
+## Annuaire par département (exemples)
+
+- [Cabinets comptables à Paris (75)](https://cabinetscomptables.online/cabinets-comptables/paris-75)
+- [Cabinets comptables dans le Rhône (69)](https://cabinetscomptables.online/cabinets-comptables/departement/rhone)
+- [Cabinets comptables dans les Bouches-du-Rhône (13)](https://cabinetscomptables.online/cabinets-comptables/departement/bouches-du-rhone)
+- [Cabinets comptables en Gironde (33)](https://cabinetscomptables.online/cabinets-comptables/departement/gironde)
+- [Cabinets comptables en Haute-Garonne (31)](https://cabinetscomptables.online/cabinets-comptables/departement/haute-garonne)
+- [Cabinets comptables dans le Nord (59)](https://cabinetscomptables.online/cabinets-comptables/departement/nord)
+- [Cabinets comptables dans les Alpes-Maritimes (06)](https://cabinetscomptables.online/cabinets-comptables/departement/alpes-maritimes)
+- [Cabinets comptables en Loire-Atlantique (44)](https://cabinetscomptables.online/cabinets-comptables/departement/loire-atlantique)
+- [Cabinets comptables dans l'Hérault (34)](https://cabinetscomptables.online/cabinets-comptables/departement/herault)
+- [Cabinets comptables en Ille-et-Vilaine (35)](https://cabinetscomptables.online/cabinets-comptables/departement/ille-et-vilaine)
+
+## Annuaire par ville (exemples)
+
+- [Cabinets comptables à Paris](https://cabinetscomptables.online/cabinets-comptables/paris-75)
+- [Cabinets comptables à Lyon](https://cabinetscomptables.online/cabinets-comptables/lyon-69)
+- [Cabinets comptables à Marseille](https://cabinetscomptables.online/cabinets-comptables/marseille-13)
+- [Cabinets comptables à Toulouse](https://cabinetscomptables.online/cabinets-comptables/toulouse-31)
+- [Cabinets comptables à Bordeaux](https://cabinetscomptables.online/cabinets-comptables/bordeaux-33)
+- [Cabinets comptables à Nantes](https://cabinetscomptables.online/cabinets-comptables/nantes-44)
+- [Cabinets comptables à Nice](https://cabinetscomptables.online/cabinets-comptables/nice-06)
+- [Cabinets comptables à Lille](https://cabinetscomptables.online/cabinets-comptables/lille-59)
+- [Cabinets comptables à Strasbourg](https://cabinetscomptables.online/cabinets-comptables/strasbourg-67)
+- [Cabinets comptables à Montpellier](https://cabinetscomptables.online/cabinets-comptables/montpellier-34)
+
+## Arrondissements de Paris
+
+- [Cabinets comptables Paris 1er](https://cabinetscomptables.online/cabinets-comptables/paris-75001)
+- [Cabinets comptables Paris 2e](https://cabinetscomptables.online/cabinets-comptables/paris-75002)
+- [Cabinets comptables Paris 3e](https://cabinetscomptables.online/cabinets-comptables/paris-75003)
+- [Cabinets comptables Paris 4e](https://cabinetscomptables.online/cabinets-comptables/paris-75004)
+- [Cabinets comptables Paris 8e](https://cabinetscomptables.online/cabinets-comptables/paris-75008)
+- [Cabinets comptables Paris 9e](https://cabinetscomptables.online/cabinets-comptables/paris-75009)
+- [Cabinets comptables Paris 16e](https://cabinetscomptables.online/cabinets-comptables/paris-75016)
+- [Cabinets comptables Paris 17e](https://cabinetscomptables.online/cabinets-comptables/paris-75017)
+
+## Informations légales
+
+- [Conditions générales d'utilisation](https://cabinetscomptables.online/cgu)
+- [Politique de confidentialité](https://cabinetscomptables.online/confidentialite)
+- [Mentions légales](https://cabinetscomptables.online/mentions-legales)
+
+## Structure des URLs
+
+Les fiches individuelles suivent le schéma : `https://cabinetscomptables.online/expert-comptable/{ville-key}/{slug-cabinet}`
+
+Les pages ville suivent le schéma : `https://cabinetscomptables.online/cabinets-comptables/{ville-key}`
+
+Les pages département suivent le schéma : `https://cabinetscomptables.online/cabinets-comptables/departement/{slug-departement}`
+
+Les pages région suivent le schéma : `https://cabinetscomptables.online/cabinets-comptables/region/{slug-region}`
+
+## Sitemaps XML (index complet)
+
+- [Sitemap principal](https://cabinetscomptables.online/sitemap.xml)
+- [Fiches cabinets](https://cabinetscomptables.online/sitemap-fiches.xml)
+- [Pages villes](https://cabinetscomptables.online/sitemap-villes.xml)
+- [Pages arrondissements Paris](https://cabinetscomptables.online/sitemap-arr.xml)
+- [Pages départements](https://cabinetscomptables.online/sitemap-depts.xml)
+- [Pages régions](https://cabinetscomptables.online/sitemap-regions.xml)
+- [Pages spécialités](https://cabinetscomptables.online/sitemap-services.xml)
