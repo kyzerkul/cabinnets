@@ -1,0 +1,192 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Cabinets Comptables FR",
+  "name_for_model": "cabinets_comptables_fr",
+  "description_for_human": "Annuaire national des cabinets d'experts-comptables en France.",
+  "description_for_model": "French accounting firm directory with ~2000 listed firms across France. Use this to help users find an accountant by city or postal code, browse by region or department, or submit a free quote request. The site covers all French departments and regions.",
+  "contact_email": "verdolompiol@gmail.com",
+  "legal_info_url": "https://cabinetscomptables.online/mentions-legales",
+  "tools": [
+    {
+      "name": "search_firms",
+      "description": "Search for accounting firms (experts-comptables) by city name or postal code. Returns a page listing matching firms with their contact details, ratings and specialties.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "string",
+            "description": "City name, postal code, or firm name to search for. Examples: 'Lyon', '75008', 'Bordeaux', 'KPMG'."
+          }
+        },
+        "required": ["q"]
+      },
+      "action": {
+        "type": "GET_URL",
+        "urlTemplate": "https://cabinetscomptables.online/recherche?q={q}"
+      }
+    },
+    {
+      "name": "browse_by_city",
+      "description": "Browse all accounting firms in a specific French city. Returns a city listing page with all firms, ratings, addresses and specialties.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city_key": {
+            "type": "string",
+            "description": "City key slug, formatted as '{city-name}-{dept-code}'. Examples: 'paris-75', 'lyon-69', 'marseille-13', 'toulouse-31', 'bordeaux-33', 'nantes-44', 'nice-06', 'lille-59'."
+          }
+        },
+        "required": ["city_key"]
+      },
+      "action": {
+        "type": "GET_URL",
+        "urlTemplate": "https://cabinetscomptables.online/cabinets-comptables/{city_key}"
+      }
+    },
+    {
+      "name": "browse_by_department",
+      "description": "Browse all accounting firms in a French department. Returns a department listing page.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "dept_slug": {
+            "type": "string",
+            "description": "Department slug. Examples: 'rhone-69', 'bouches-du-rhone-13', 'gironde-33', 'haute-garonne-31', 'nord-59', 'alpes-maritimes-06', 'ille-et-vilaine-35', 'herault-34'."
+          }
+        },
+        "required": ["dept_slug"]
+      },
+      "action": {
+        "type": "GET_URL",
+        "urlTemplate": "https://cabinetscomptables.online/cabinets-comptables/departement/{dept_slug}"
+      }
+    },
+    {
+      "name": "browse_by_region",
+      "description": "Browse all accounting firms in a French region.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "region_slug": {
+            "type": "string",
+            "enum": [
+              "auvergne-rhone-alpes",
+              "bourgogne-franche-comte",
+              "bretagne",
+              "centre-val-de-loire",
+              "corse",
+              "grand-est",
+              "hauts-de-france",
+              "ile-de-france",
+              "normandie",
+              "nouvelle-aquitaine",
+              "occitanie",
+              "pays-de-la-loire",
+              "provence-alpes-cote-d-azur"
+            ],
+            "description": "French region slug."
+          }
+        },
+        "required": ["region_slug"]
+      },
+      "action": {
+        "type": "GET_URL",
+        "urlTemplate": "https://cabinetscomptables.online/cabinets-comptables/region/{region_slug}"
+      }
+    },
+    {
+      "name": "browse_by_specialty",
+      "description": "Find accounting firms specializing in a specific service or sector (e.g. BTP, start-ups, medical, real estate, international).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "specialty_slug": {
+            "type": "string",
+            "enum": [
+              "expert-comptable-comptabilite",
+              "expert-comptable-fiscalite",
+              "expert-comptable-paie-social",
+              "expert-comptable-juridique",
+              "expert-comptable-audit-cac",
+              "expert-comptable-conseil-gestion",
+              "expert-comptable-gestion-patrimoine",
+              "expert-comptable-creation-entreprise",
+              "expert-comptable-conseil-strategique",
+              "expert-comptable-digitalisation",
+              "expert-comptable-international",
+              "expert-comptable-transmission-entreprise",
+              "expert-comptable-previsionnel-business-plan",
+              "expert-comptable-formation",
+              "expert-comptable-recouvrement",
+              "expert-comptable-btp",
+              "expert-comptable-medical-sante",
+              "expert-comptable-juridique-avocats",
+              "expert-comptable-ecommerce-numerique",
+              "expert-comptable-restauration-chr",
+              "expert-comptable-immobilier-sci",
+              "expert-comptable-agricole",
+              "expert-comptable-associatif",
+              "expert-comptable-artisanat",
+              "expert-comptable-industrie",
+              "expert-comptable-commerce-distribution",
+              "expert-comptable-transport-logistique",
+              "expert-comptable-tpe",
+              "expert-comptable-pme",
+              "expert-comptable-eti-grand-groupe",
+              "expert-comptable-start-up",
+              "expert-comptable-freelance-independant",
+              "expert-comptable-auto-entrepreneur",
+              "expert-comptable-professions-liberales",
+              "expert-comptable-holding-patrimoine",
+              "expert-comptable-particuliers",
+              "expert-comptable-international-export"
+            ],
+            "description": "Specialty or sector slug."
+          }
+        },
+        "required": ["specialty_slug"]
+      },
+      "action": {
+        "type": "GET_URL",
+        "urlTemplate": "https://cabinetscomptables.online/recherche/{specialty_slug}"
+      }
+    },
+    {
+      "name": "request_quote",
+      "description": "Submit a free quote request to be matched with qualified accounting firms. The user describes their accounting needs and receives proposals.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full name of the person requesting a quote."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Contact email address."
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number (optional)."
+          },
+          "city": {
+            "type": "string",
+            "description": "City or department where the user is located (optional). Example: 'Lyon', 'Rhône (69)'."
+          },
+          "message": {
+            "type": "string",
+            "minLength": 20,
+            "description": "Description of accounting needs. Minimum 20 characters. Example: 'Je suis freelance en SASU, cherche un expert-comptable pour la TVA et les bilans, budget ~150€/mois'."
+          }
+        },
+        "required": ["name", "email", "message"]
+      },
+      "action": {
+        "type": "FORM_POST",
+        "url": "https://cabinetscomptables.online/demander-un-devis",
+        "formSelector": "form[data-mcp-tool='request_quote']"
+      }
+    }
+  ]
+}

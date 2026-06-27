@@ -43,7 +43,7 @@ export function QuoteRequestForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5" data-mcp-tool="request_quote">
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label htmlFor="name">
@@ -57,6 +57,7 @@ export function QuoteRequestForm() {
             aria-required="true"
             autoComplete="name"
             placeholder="Marie Dupont"
+            data-mcp-param="name"
           />
         </div>
 
@@ -72,6 +73,7 @@ export function QuoteRequestForm() {
             aria-required="true"
             autoComplete="email"
             placeholder="marie@exemple.fr"
+            data-mcp-param="email"
           />
         </div>
       </div>
@@ -85,6 +87,7 @@ export function QuoteRequestForm() {
             type="tel"
             autoComplete="tel"
             placeholder="06 12 34 56 78"
+            data-mcp-param="phone"
           />
         </div>
 
@@ -96,6 +99,7 @@ export function QuoteRequestForm() {
             type="text"
             autoComplete="address-level2"
             placeholder="Lyon, Rhône (69)…"
+            data-mcp-param="city"
           />
         </div>
       </div>
@@ -113,6 +117,7 @@ export function QuoteRequestForm() {
           rows={5}
           placeholder="Ex : je suis freelance en SASU, cherche un expert-comptable pour la TVA et les bilans, budget ~150 €/mois…"
           className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
+          data-mcp-param="message"
         />
       </div>
 

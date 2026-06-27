@@ -17,13 +17,15 @@ export function HomepageSearch() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="flex gap-2 max-w-md mx-auto" data-mcp-tool="search_firms">
       <Input
         value={q}
         onChange={(e) => setQ(e.target.value)}
+        name="q"
         placeholder="Ville, code postal…"
         className="flex-1"
         aria-label="Rechercher par ville ou code postal"
+        data-mcp-param="q"
       />
       <Button type="submit">
         <Search className="h-4 w-4" aria-hidden="true" />

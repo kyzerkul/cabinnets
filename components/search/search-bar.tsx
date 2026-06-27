@@ -31,9 +31,11 @@ export function SearchBar({
       className="flex gap-2"
       role="search"
       aria-label="Rechercher un cabinet comptable"
+      data-mcp-tool="search_firms"
     >
       <Input
         type="search"
+        name="q"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
@@ -41,6 +43,7 @@ export function SearchBar({
         autoFocus
         minLength={2}
         aria-label="Terme de recherche"
+        data-mcp-param="q"
       />
       <Button type="submit">
         <Search className="h-4 w-4 mr-2" aria-hidden="true" />
