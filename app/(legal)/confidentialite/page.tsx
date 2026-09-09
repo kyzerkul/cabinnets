@@ -9,7 +9,6 @@ import { JsonLd } from '@/components/seo/json-ld'
 export function generateMetadata(): Metadata {
   return {
     title: 'Politique de confidentialité',
-    robots: { index: false, follow: false },
     alternates: { canonical: canonicalUrl('/confidentialite') },
   }
 }

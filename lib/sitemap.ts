@@ -1,4 +1,12 @@
+// Fallback lastmod for pages that have no per-row timestamp (listings, static
+// pages). Stamped once at build time.
 export const BUILD_DATE = new Date().toISOString().slice(0, 10)
+
+export function isoDate(value: Date | string | null | undefined): string {
+  if (!value) return BUILD_DATE
+  const d = value instanceof Date ? value : new Date(value)
+  return Number.isNaN(d.getTime()) ? BUILD_DATE : d.toISOString().slice(0, 10)
+}
 
 export function xmlUrlEntry(
   loc: string,
@@ -29,3 +37,10 @@ export function xmlSitemapIndex(entries: string[]): string {
     `</sitemapindex>`
   )
 }
+
+// Sitemaps are served as static files; without this they are cached by the CDN
+// with no revalidation hint and can go stale between deploys.
+export const SITEMAP_HEADERS = {
+  'Content-Type': 'application/xml; charset=utf-8',
+  'Cache-Control': 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
+} as const

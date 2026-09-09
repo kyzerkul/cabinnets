@@ -9,7 +9,7 @@ import { RemovalRequestForm } from '@/components/legal/removal-request-form'
 export function generateMetadata(): Metadata {
   return {
     title: 'Supprimer ma fiche — Demande RGPD',
-    robots: { index: false, follow: false },
+    robots: { index: false, follow: true },
     alternates: { canonical: canonicalUrl('/supprimer-ma-fiche') },
   }
 }

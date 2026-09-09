@@ -9,7 +9,6 @@ import { JsonLd } from '@/components/seo/json-ld'
 export function generateMetadata(): Metadata {
   return {
     title: "Conditions Générales d'Utilisation",
-    robots: { index: false, follow: false },
     alternates: { canonical: canonicalUrl('/cgu') },
   }
 }

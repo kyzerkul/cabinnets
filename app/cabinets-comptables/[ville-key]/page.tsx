@@ -53,8 +53,17 @@ const loadPageData = cache(async (cityKey: string) => {
   return { city, cabinets, citiesDept, nearbyCities, deptCount }
 })
 
+// Thin city pages (<3 local cabinets) pad the listing with cabinets from
+// neighbouring towns. Unbounded, that repeats the same dozens of cards across
+// every neighbouring city page — a wall of near-duplicate listings that gives
+// Google a reason to leave the whole cluster unindexed. Cap it: the closest
+// few are the only ones a visitor would realistically consider anyway.
+const NEARBY_DISPLAY_LIMIT = 12
+
 // Deduplicated between generateMetadata and page() via React.cache
-const loadNearbyCabinets = cache((cityKey: string) => getCabinetsNearCityFast(cityKey, 20))
+const loadNearbyCabinets = cache(async (cityKey: string) =>
+  (await getCabinetsNearCityFast(cityKey, 20)).slice(0, NEARBY_DISPLAY_LIMIT),
+)
 
 export async function generateStaticParams() {
   const [normalKeys, thinKeys, arrKeys] = await Promise.all([
@@ -274,7 +283,7 @@ export default async function VillePage({ params }: Props) {
           <Section>
             <Container size="wide">
               <h2 className="text-xl font-semibold mb-4">
-                Cabinets comptables à proximité (rayon 20 km)
+                Les {nearbyCabinets.length} cabinets les plus proches de {cityDisplay} (rayon 20 km)
               </h2>
               <CabinetGrid cabinets={nearbyCabinets} />
             </Container>

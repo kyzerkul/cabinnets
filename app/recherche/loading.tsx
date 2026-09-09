@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function RechercheLoading() {
   return (
-    <main id="main-content">
+    <>
       <Container size="wide" className="py-8 md:py-12">
         <Skeleton className="h-8 w-64 mb-6" />
         <Skeleton className="h-10 w-full mb-8" />
@@ -13,6 +13,6 @@ export default function RechercheLoading() {
           ))}
         </div>
       </Container>
-    </main>
+    </>
   )
 }

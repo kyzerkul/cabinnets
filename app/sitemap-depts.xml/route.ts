@@ -1,6 +1,6 @@
 import { getAllDeptCodes, getDept } from '@/lib/cities'
 import { canonicalUrl } from '@/lib/seo'
-import { BUILD_DATE, xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
+import { BUILD_DATE, SITEMAP_HEADERS, xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
 import type { DeptWithRegion } from '@/lib/types'
 
 export const dynamic = 'force-static'
@@ -17,12 +17,5 @@ export async function GET() {
         0.8,
       ),
     )
-  const indexEntry = xmlUrlEntry(
-    canonicalUrl('/cabinets-comptables/departements'),
-    BUILD_DATE,
-    0.7,
-  )
-  return new Response(xmlUrlset([indexEntry, ...deptEntries]), {
-    headers: { 'Content-Type': 'application/xml' },
-  })
+  return new Response(xmlUrlset(deptEntries), { headers: SITEMAP_HEADERS })
 }

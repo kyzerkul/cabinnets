@@ -488,3 +488,43 @@ export async function getTopCitiesByCabinetCount(
     .sort((a, b) => b.cabinetCount - a.cabinetCount || a.name.localeCompare(b.name, 'fr'))
     .slice(0, safeLimit)
 }
+
+// All regions with their cabinet count, for the homepage region hub.
+// Derived from the master SSG cache at build time (0 extra DB queries).
+export async function getRegionsWithCabinetCount(): Promise<
+  { code: string; name: string; slug: string; cabinetCount: number }[]
+> {
+  if (IS_BUILD) {
+    const master = await getAllCabinetsWithRelationsForSsg()
+    const byRegion = new Map<string, { code: string; name: string; slug: string; count: number }>()
+    for (const c of master) {
+      const r = c.city.department.region
+      const entry = byRegion.get(r.code)
+      if (entry) entry.count++
+      else byRegion.set(r.code, { code: r.code, name: r.name, slug: r.slug, count: 1 })
+    }
+    return [...byRegion.values()]
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'fr'))
+      .map(({ code, name, slug, count }) => ({ code, name, slug, cabinetCount: count }))
+  }
+
+  const rows = await prisma.region.findMany({ select: { code: true, name: true, slug: true } })
+  // Prisma cannot count a 3-level relation in one pass — tally cabinets in JS.
+  const counts = await prisma.cabinet.findMany({
+    where: { isDeleted: false },
+    select: { city: { select: { department: { select: { regionCode: true } } } } },
+  })
+  const tally = new Map<string, number>()
+  for (const c of counts) {
+    const code = c.city.department.regionCode
+    tally.set(code, (tally.get(code) ?? 0) + 1)
+  }
+  return rows
+    .map((r) => ({
+      code: r.code,
+      name: r.name,
+      slug: r.slug,
+      cabinetCount: tally.get(r.code) ?? 0,
+    }))
+    .sort((a, b) => b.cabinetCount - a.cabinetCount || a.name.localeCompare(b.name, 'fr'))
+}

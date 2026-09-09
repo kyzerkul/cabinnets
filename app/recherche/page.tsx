@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = {
   title: 'Recherche de cabinets comptables',
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
 }
 
 interface SearchPageProps {
@@ -34,7 +34,7 @@ export default async function RecherchePage({ searchParams }: SearchPageProps) {
     `/recherche?q=${encodeURIComponent(query)}&page=${p}`
 
   return (
-    <main id="main-content">
+    <>
       <Container size="wide" className="py-8 md:py-12">
         <h1 className="text-2xl font-semibold mb-6">Rechercher un expert-comptable</h1>
 
@@ -98,6 +98,6 @@ export default async function RecherchePage({ searchParams }: SearchPageProps) {
           </p>
         )}
       </Container>
-    </main>
+    </>
   )
 }
