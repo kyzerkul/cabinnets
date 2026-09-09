@@ -1,11 +1,12 @@
 import { siteUrl } from '@/lib/seo'
-import { BUILD_DATE, xmlSitemapEntry, xmlSitemapIndex } from '@/lib/sitemap'
+import { BUILD_DATE, SITEMAP_HEADERS, xmlSitemapEntry, xmlSitemapIndex } from '@/lib/sitemap'
 
 export const dynamic = 'force-static'
 
 export function GET() {
   const base = siteUrl()
   const sitemaps = [
+    'sitemap-pages.xml',
     'sitemap-fiches.xml',
     'sitemap-villes.xml',
     'sitemap-arr.xml',
@@ -16,5 +17,5 @@ export function GET() {
   const xml = xmlSitemapIndex(
     sitemaps.map((name) => xmlSitemapEntry(`${base}/${name}`, BUILD_DATE)),
   )
-  return new Response(xml, { headers: { 'Content-Type': 'application/xml' } })
+  return new Response(xml, { headers: SITEMAP_HEADERS })
 }

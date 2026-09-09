@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { buildHomepageTitle, SITE_NAME } from '@/lib/seo'
+import { buildHomepageTitle, siteUrl, SITE_NAME } from '@/lib/seo'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -12,15 +12,18 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
-  ),
+  // siteUrl() throws on a production build when NEXT_PUBLIC_SITE_URL is unset,
+  // rather than silently falling back to localhost and emitting
+  // `http://localhost:3000/...` canonicals on every page.
+  metadataBase: new URL(siteUrl()),
   title: {
     default: buildHomepageTitle(),
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    'Annuaire des cabinets comptables en France. Trouvez un expert-comptable près de chez vous.',
+    "Annuaire indépendant des cabinets d'expertise comptable en France. Trouvez un expert-comptable près de chez vous : coordonnées, horaires, spécialités.",
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME }],
   openGraph: {
     type: 'website',
     locale: 'fr_FR',

@@ -1,14 +1,9 @@
 import { getAllRegionCodes, getRegion } from '@/lib/cities'
 import { canonicalUrl } from '@/lib/seo'
-import { BUILD_DATE, xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
+import { BUILD_DATE, SITEMAP_HEADERS, xmlUrlEntry, xmlUrlset } from '@/lib/sitemap'
 import type { Region } from '@/lib/types'
 
 export const dynamic = 'force-static'
-
-const STATIC_PAGES: { path: string; priority: number }[] = [
-  { path: '/', priority: 1.0 },
-  { path: '/demander-un-devis', priority: 0.5 },
-]
 
 export async function GET() {
   const codes = await getAllRegionCodes()
@@ -24,11 +19,5 @@ export async function GET() {
       ),
     )
 
-  const staticEntries = STATIC_PAGES.map(({ path, priority }) =>
-    xmlUrlEntry(canonicalUrl(path), BUILD_DATE, priority),
-  )
-
-  return new Response(xmlUrlset([...staticEntries, ...regionEntries]), {
-    headers: { 'Content-Type': 'application/xml' },
-  })
+  return new Response(xmlUrlset(regionEntries), { headers: SITEMAP_HEADERS })
 }

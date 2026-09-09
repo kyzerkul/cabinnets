@@ -140,14 +140,16 @@ export async function getCabinetsByRegion(
 
 // ─── generateStaticParams data ────────────────────────────────────
 
-export async function getAllCabinetSlugs(): Promise<{ slug: string; cityKey: string }[]> {
+export async function getAllCabinetSlugs(): Promise<
+  { slug: string; cityKey: string; updatedAt: Date }[]
+> {
   if (IS_BUILD) {
     const cabinets = await getAllCabinetsWithRelationsForSsg()
-    return cabinets.map((c) => ({ slug: c.slug, cityKey: c.cityKey }))
+    return cabinets.map((c) => ({ slug: c.slug, cityKey: c.cityKey, updatedAt: c.updatedAt }))
   }
   return prisma.cabinet.findMany({
     where: { isDeleted: false },
-    select: { slug: true, cityKey: true },
+    select: { slug: true, cityKey: true, updatedAt: true },
   })
 }
 

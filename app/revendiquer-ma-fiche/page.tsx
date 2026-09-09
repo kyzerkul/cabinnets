@@ -7,7 +7,7 @@ import { canonicalUrl } from '@/lib/seo'
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Revendiquer ma fiche cabinet',
-    robots: { index: false, follow: false },
+    robots: { index: false, follow: true },
     alternates: {
       canonical: canonicalUrl('/revendiquer-ma-fiche'),
     },

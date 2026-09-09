@@ -74,7 +74,7 @@ export default async function SpecialitePage({ params }: SpecialitePageProps) {
   const displayCount = cabinets.length >= 50 ? '50+' : String(cabinets.length)
 
   return (
-    <main id="main-content">
+    <>
       <JsonLd data={collectionJsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
 
@@ -100,6 +100,6 @@ export default async function SpecialitePage({ params }: SpecialitePageProps) {
           </p>
         )}
       </Container>
-    </main>
+    </>
   )
 }

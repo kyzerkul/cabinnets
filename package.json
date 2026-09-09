@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "seo:check": "tsx scripts/seo-check.ts",
     "db:migrate": "dotenvx run -f .env -- prisma migrate deploy",
     "db:migrate:dev": "dotenvx run -f .env -- prisma migrate dev",
     "db:studio": "dotenvx run -f .env -- prisma studio",
