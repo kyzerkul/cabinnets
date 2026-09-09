@@ -5,7 +5,7 @@
   "description_for_human": "Annuaire national des cabinets d'experts-comptables en France.",
   "description_for_model": "French accounting firm directory with ~2000 listed firms across France. Use this to help users find an accountant by city or postal code, browse by region or department, or submit a free quote request. The site covers all French departments and regions.",
   "contact_email": "verdolompiol@gmail.com",
-  "legal_info_url": "https://cabinetscomptables.online/mentions-legales",
+  "legal_info_url": "https://www.cabinetscomptables.online/mentions-legales",
   "tools": [
     {
       "name": "search_firms",
@@ -22,7 +22,7 @@
       },
       "action": {
         "type": "GET_URL",
-        "urlTemplate": "https://cabinetscomptables.online/recherche?q={q}"
+        "urlTemplate": "https://www.cabinetscomptables.online/recherche?q={q}"
       }
     },
     {
@@ -40,7 +40,7 @@
       },
       "action": {
         "type": "GET_URL",
-        "urlTemplate": "https://cabinetscomptables.online/cabinets-comptables/{city_key}"
+        "urlTemplate": "https://www.cabinetscomptables.online/cabinets-comptables/{city_key}"
       }
     },
     {
@@ -58,7 +58,7 @@
       },
       "action": {
         "type": "GET_URL",
-        "urlTemplate": "https://cabinetscomptables.online/cabinets-comptables/departement/{dept_slug}"
+        "urlTemplate": "https://www.cabinetscomptables.online/cabinets-comptables/departement/{dept_slug}"
       }
     },
     {
@@ -91,7 +91,7 @@
       },
       "action": {
         "type": "GET_URL",
-        "urlTemplate": "https://cabinetscomptables.online/cabinets-comptables/region/{region_slug}"
+        "urlTemplate": "https://www.cabinetscomptables.online/cabinets-comptables/region/{region_slug}"
       }
     },
     {
@@ -148,7 +148,7 @@
       },
       "action": {
         "type": "GET_URL",
-        "urlTemplate": "https://cabinetscomptables.online/recherche/{specialty_slug}"
+        "urlTemplate": "https://www.cabinetscomptables.online/recherche/{specialty_slug}"
       }
     },
     {
@@ -184,7 +184,7 @@
       },
       "action": {
         "type": "FORM_POST",
-        "url": "https://cabinetscomptables.online/demander-un-devis",
+        "url": "https://www.cabinetscomptables.online/demander-un-devis",
         "formSelector": "form[data-mcp-tool='request_quote']"
       }
     }
