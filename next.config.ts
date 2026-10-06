@@ -1,20 +1,10 @@
 import type { NextConfig } from 'next'
 import bundleAnalyzer from '@next/bundle-analyzer'
+import { PRODUCTION_ORIGIN } from './lib/site-config'
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
-
-// Host of the canonical origin, derived from the same variable that drives every
-// canonical, og:url and sitemap <loc>. Null only when the variable is unset — in
-// which case lib/seo.ts fails the build anyway.
-function canonicalHost(): string | null {
-  try {
-    return new URL(process.env.NEXT_PUBLIC_SITE_URL ?? '').host
-  } catch {
-    return null
-  }
-}
 
 // Vercel assigns the project's production *.vercel.app alias to Production and,
 // unlike preview deployments, serves it WITHOUT a noindex header and WITHOUT a
@@ -33,8 +23,10 @@ const nextConfig: NextConfig = {
     cpus: 1,
   },
   async redirects() {
-    const host = canonicalHost()
-    if (!host || host === VERCEL_PRODUCTION_ALIAS) return []
+    // Same constant the canonicals are built from, so the alias can never be
+    // sent to a host that is not the one declared as canonical.
+    const host = new URL(PRODUCTION_ORIGIN).host
+    if (host === VERCEL_PRODUCTION_ALIAS) return []
     return [
       {
         source: '/:path*',
