@@ -7,10 +7,11 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { PrismaClient } from '@prisma/client'
+import { PRODUCTION_ORIGIN } from '../lib/site-config'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.cabinetscomptables.online'
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? PRODUCTION_ORIGIN
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL })
 const adapter = new PrismaPg(pool)

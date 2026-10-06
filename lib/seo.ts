@@ -1,58 +1,17 @@
 import type { CabinetWithRelations, City } from '@/lib/types'
+import { resolveSiteOrigin } from '@/lib/site-config'
 
 export const SITE_NAME = 'Cabinets Comptables FR'
 
 // ─── Base URL ─────────────────────────────────────────────────────
 // Every canonical, og:url, JSON-LD @id and sitemap <loc> is built from this.
-// It MUST be an absolute production URL, and it MUST match the domain Vercel
-// serves without redirecting (www vs apex). If it is wrong or missing, Next
-// silently falls back to metadataBase and emits `http://localhost:3000/...`
-// canonicals on every page — which makes Google drop the whole site. So we
-// fail the build loudly instead of shipping that.
-
-const DEV_FALLBACK_URL = 'http://localhost:3000'
-
-const SITE_URL_HELP =
-  'NEXT_PUBLIC_SITE_URL must be set to the absolute production origin, with no ' +
-  'trailing slash and no path (e.g. "https://www.cabinetscomptables.online"). ' +
-  'It has to match the domain your host serves without redirecting — if the ' +
-  'apex 301s to www, use the www form, otherwise every canonical points at a ' +
-  'redirect and Google will refuse to index the site. Set it in the Vercel ' +
-  'project (Settings → Environment Variables) for Production, Preview and ' +
-  'Development, then redeploy.'
+// The origin itself lives in lib/site-config.ts, which explains why it is a
+// constant and not a dashboard setting.
 
 let _siteUrl: string | undefined
 
 export function siteUrl(): string {
-  if (_siteUrl !== undefined) return _siteUrl
-
-  const raw = process.env.NEXT_PUBLIC_SITE_URL
-  const value = typeof raw === 'string' ? raw.trim().replace(/\/+$/, '') : ''
-  const isProd = process.env.NODE_ENV === 'production'
-
-  if (!/^https?:\/\//.test(value)) {
-    if (isProd) throw new Error(`[seo] NEXT_PUBLIC_SITE_URL is missing or invalid. ${SITE_URL_HELP}`)
-    _siteUrl = DEV_FALLBACK_URL
-    return _siteUrl
-  }
-
-  if (/^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:|\/|$)/.test(value)) {
-    // Explicit localhost is legitimate for `next build && next start` on a dev
-    // machine, but never for a real deployment — hence the split.
-    if (process.env.VERCEL || process.env.CI) {
-      throw new Error(
-        `[seo] NEXT_PUBLIC_SITE_URL points at "${value}" on a deployed build. ${SITE_URL_HELP}`,
-      )
-    }
-    if (isProd) {
-      console.warn(
-        `[seo] NEXT_PUBLIC_SITE_URL is "${value}". Fine for a local production build; ` +
-          'never deploy with this value — every canonical would point at localhost.',
-      )
-    }
-  }
-
-  _siteUrl = value
+  if (_siteUrl === undefined) _siteUrl = resolveSiteOrigin()
   return _siteUrl
 }
 
